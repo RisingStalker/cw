@@ -1,3 +1,4 @@
+import FlashToast from '@/components/flash-toast';
 import { AppContent } from '@/components/app-content';
 import { AppHeader } from '@/components/app-header';
 import { AppShell } from '@/components/app-shell';
@@ -10,6 +11,7 @@ export default function AppHeaderLayout({
 }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
     return (
         <AppShell>
+            <FlashToast />
             <AppHeader breadcrumbs={breadcrumbs} />
             <AppContent>{children}</AppContent>
         </AppShell>

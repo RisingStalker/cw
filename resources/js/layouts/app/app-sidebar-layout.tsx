@@ -1,8 +1,8 @@
+import FlashToast from '@/components/flash-toast';
 import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
-import FlashMessage from '@/components/flash-message';
 import { type BreadcrumbItem } from '@/types';
 import { type PropsWithChildren } from 'react';
 
@@ -12,10 +12,10 @@ export default function AppSidebarLayout({
 }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
     return (
         <AppShell variant="sidebar">
+            <FlashToast />
             <AppSidebar />
-            <AppContent variant="sidebar" className="overflow-x-hidden">
+            <AppContent variant="sidebar" className="overflow-x-hidden p-4">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                <FlashMessage className="p-4 pb-0" />
                 {children}
             </AppContent>
         </AppShell>

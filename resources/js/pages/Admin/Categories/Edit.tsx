@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/flash-message';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -36,7 +35,6 @@ export default function CategoriesEdit() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <FlashMessage />
             <div className="flex items-center justify-between gap-4">
                 <div>
                     <h1 className="text-xl font-semibold">Edit Category</h1>

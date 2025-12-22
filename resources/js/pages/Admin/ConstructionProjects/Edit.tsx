@@ -91,7 +91,7 @@ export default function ConstructionProjectsEdit() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">Edit Construction Project</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">Edit Construction Project</h1>
                     <p className="text-sm text-muted-foreground">
                         Update project details, rooms, and bathrooms.
                     </p>

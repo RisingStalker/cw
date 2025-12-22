@@ -31,7 +31,7 @@ export default function CustomersCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">New Customer</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">New Customer</h1>
                     <p className="text-sm text-muted-foreground">
                         Create a customer and send login credentials.
                     </p>

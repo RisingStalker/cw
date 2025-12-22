@@ -36,13 +36,13 @@ class CustomerLoginCredentials extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('translations.login_credentials_sent'))
-            ->line(__('translations.welcome').' '.$notifiable->name)
-            ->line(__('translations.login_credentials_sent'))
-            ->line(__('translations.email').': '.$notifiable->email)
-            ->line(__('translations.password').': '.$this->password)
-            ->action(__('translations.login'), route('login'))
-            ->line(__('translations.password_reset_sent'));
+            ->subject(__('translations.account_registered'))
+            ->greeting(__('translations.welcome').' '.$notifiable->name.',')
+            ->line(__('translations.account_registered_message'))
+            ->line(__('translations.email').': **'.$notifiable->email.'**')
+            ->line(__('translations.password').': **'.$this->password.'**')
+            ->line(__('translations.use_credentials_to_login'))
+            ->action(__('translations.login'), route('login'));
     }
 
     /**

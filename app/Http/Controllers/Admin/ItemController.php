@@ -88,7 +88,14 @@ class ItemController extends Controller
 
             // Handle price table relationships
             if ($request->price_tables) {
-                foreach ($request->price_tables as $priceTableData) {
+                // Filter out duplicates and empty price_table_id entries
+                $uniquePriceTables = collect($request->price_tables)
+                    ->filter(fn($pt) => !empty($pt['price_table_id']))
+                    ->unique('price_table_id')
+                    ->values()
+                    ->all();
+                
+                foreach ($uniquePriceTables as $priceTableData) {
                     $item->priceTables()->attach($priceTableData['price_table_id'], [
                         'additional_cost' => $priceTableData['additional_cost'],
                     ]);
@@ -163,7 +170,14 @@ class ItemController extends Controller
             // Handle price table relationships
             $item->priceTables()->detach();
             if ($request->price_tables) {
-                foreach ($request->price_tables as $priceTableData) {
+                // Filter out duplicates and empty price_table_id entries
+                $uniquePriceTables = collect($request->price_tables)
+                    ->filter(fn($pt) => !empty($pt['price_table_id']))
+                    ->unique('price_table_id')
+                    ->values()
+                    ->all();
+                
+                foreach ($uniquePriceTables as $priceTableData) {
                     $item->priceTables()->attach($priceTableData['price_table_id'], [
                         'additional_cost' => $priceTableData['additional_cost'],
                     ]);

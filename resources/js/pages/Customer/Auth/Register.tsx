@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/flash-message';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,8 +26,6 @@ export default function CustomerRegister() {
             description="Sign up to access your construction projects"
         >
             <Head title="Customer Registration" />
-
-            <FlashMessage className="mb-4" />
 
             <form onSubmit={submit} className="flex flex-col gap-6">
                 <div className="grid gap-6">

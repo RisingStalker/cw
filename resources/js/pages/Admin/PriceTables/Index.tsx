@@ -1,4 +1,4 @@
-import FlashMessage from '@/components/flash-message';
+import FlashToast from '@/components/flash-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -72,25 +72,25 @@ export default function PriceTablesIndex() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <FlashMessage />
-            <div className="flex items-center justify-between gap-4">
+            <FlashToast />
+            <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold">Price Tables</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">Price Tables</h1>
                     <p className="text-sm text-muted-foreground">
                         Manage price tables by year. Projects use price tables
                         to determine item pricing.
                     </p>
                 </div>
-                <Button asChild>
+                <Button asChild size="lg">
                     <Link href={admin.priceTables.create().url}>
-                        New Price Table
+                        + New Price Table
                     </Link>
                 </Button>
             </div>
 
-            <Card className="mt-4">
+            <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle>Filters</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Search Price Tables</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -98,9 +98,10 @@ export default function PriceTablesIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search by year"
+                            placeholder="Search by year..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
+                            className="flex-1"
                         />
                         <select
                             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -129,30 +130,31 @@ export default function PriceTablesIndex() {
                 </CardContent>
             </Card>
 
-            <Card className="mt-4">
+            <Card>
                 <CardHeader>
-                    <CardTitle>Price Tables</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Price Table List</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
-                            <tr className="text-left">
-                                <th className="py-2">Year</th>
-                                <th className="py-2">Status</th>
-                                <th className="py-2">Projects</th>
-                                <th className="py-2 text-right">Actions</th>
+                            <tr className="text-left border-b border-border/50">
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Year</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Status</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Projects</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredPriceTables.map((priceTable) => (
+                            {filteredPriceTables.map((priceTable, index) => (
                                 <tr
                                     key={priceTable.id}
-                                    className="border-t border-border/70"
+                                    className="border-b border-border/30 hover:bg-accent/30 transition-colors duration-150"
+                                    style={{ animationDelay: `${index * 50}ms` }}
                                 >
-                                    <td className="py-2 font-medium">
+                                    <td className="py-3 px-2 font-medium">
                                         {priceTable.year}
                                     </td>
-                                    <td className="py-2">
+                                    <td className="py-3 px-2">
                                         {priceTable.is_active ? (
                                             <span className="rounded bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900 dark:text-green-200">
                                                 Active
@@ -163,11 +165,12 @@ export default function PriceTablesIndex() {
                                             </span>
                                         )}
                                     </td>
-                                    <td className="py-2 text-muted-foreground">
-                                        {priceTable.construction_projects_count ??
-                                            0}
+                                    <td className="py-3 px-2">
+                                        <span className="inline-flex items-center justify-center min-w-[2rem] h-6 px-2 rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {priceTable.construction_projects_count ?? 0}
+                                        </span>
                                     </td>
-                                    <td className="py-2 text-right">
+                                    <td className="py-3 px-2 text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button
                                                 variant="outline"
@@ -198,12 +201,19 @@ export default function PriceTablesIndex() {
                             {filteredPriceTables.length === 0 && (
                                 <tr>
                                     <td
-                                        className="py-4 text-center text-muted-foreground"
+                                        className="py-12 text-center text-muted-foreground"
                                         colSpan={4}
                                     >
-                                        {search || status
-                                            ? 'No price tables found matching your filters.'
-                                            : 'No price tables found. Create one to get started.'}
+                                        <div className="flex flex-col items-center gap-2">
+                                            <p className="text-base">
+                                                {search || status
+                                                    ? 'No price tables found matching your filters.'
+                                                    : 'No price tables found.'}
+                                            </p>
+                                            {!search && !status && (
+                                                <p className="text-sm opacity-70">Create your first price table to get started.</p>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             )}

@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/flash-message';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -63,24 +62,23 @@ export default function CategoriesIndex() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <FlashMessage />
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold">Categories</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">Categories</h1>
                     <p className="text-sm text-muted-foreground">
                         Manage categories and their display order.
                     </p>
                 </div>
-                <Button asChild>
+                <Button asChild size="lg">
                     <Link href={admin.categories.create().url}>
-                        New Category
+                        + New Category
                     </Link>
                 </Button>
             </div>
 
-            <Card className="mt-4">
+            <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle>Search</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Search Categories</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -88,9 +86,10 @@ export default function CategoriesIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search category name"
+                            placeholder="Search category name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
+                            className="flex-1"
                         />
                         <div className="flex gap-2">
                             <Button type="submit">Search</Button>
@@ -109,36 +108,39 @@ export default function CategoriesIndex() {
                 </CardContent>
             </Card>
 
-            <Card className="mt-4">
+            <Card>
                 <CardHeader>
-                    <CardTitle>Categories</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Category List</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
-                            <tr className="text-left">
-                                <th className="py-2">Name</th>
-                                <th className="py-2">Order</th>
-                                <th className="py-2">Items</th>
-                                <th className="py-2 text-right">Actions</th>
+                            <tr className="text-left border-b border-border/50">
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Name</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Order</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Items</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredCategories.map((category) => (
+                            {filteredCategories.map((category, index) => (
                                 <tr
                                     key={category.id}
-                                    className="border-t border-border/70"
+                                    className="border-b border-border/30 hover:bg-accent/30 transition-colors duration-150"
+                                    style={{ animationDelay: `${index * 50}ms` }}
                                 >
-                                    <td className="py-2 font-medium">
+                                    <td className="py-3 px-2 font-medium">
                                         {category.name}
                                     </td>
-                                    <td className="py-2 text-muted-foreground">
+                                    <td className="py-3 px-2 text-muted-foreground">
                                         {category.order}
                                     </td>
-                                    <td className="py-2">
-                                        {category.items_count ?? 0}
+                                    <td className="py-3 px-2">
+                                        <span className="inline-flex items-center justify-center min-w-[2rem] h-6 px-2 rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {category.items_count ?? 0}
+                                        </span>
                                     </td>
-                                    <td className="py-2 text-right">
+                                    <td className="py-3 px-2 text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button
                                                 variant="outline"
@@ -169,12 +171,19 @@ export default function CategoriesIndex() {
                             {filteredCategories.length === 0 && (
                                 <tr>
                                     <td
-                                        className="py-4 text-center text-muted-foreground"
+                                        className="py-12 text-center text-muted-foreground"
                                         colSpan={4}
                                     >
-                                        {search
-                                            ? 'No categories found matching your search.'
-                                            : 'No categories found. Create one to get started.'}
+                                        <div className="flex flex-col items-center gap-2">
+                                            <p className="text-base">
+                                                {search
+                                                    ? 'No categories found matching your search.'
+                                                    : 'No categories found.'}
+                                            </p>
+                                            {!search && (
+                                                <p className="text-sm opacity-70">Create your first category to get started.</p>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             )}

@@ -35,7 +35,7 @@ export default function PriceTablesCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">New Price Table</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">New Price Table</h1>
                     <p className="text-sm text-muted-foreground">
                         Create a new price table for a specific year.
                     </p>

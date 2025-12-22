@@ -18,7 +18,7 @@ export default function AppearanceToggleTab({
     return (
         <div
             className={cn(
-                'inline-flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800',
+                'inline-flex gap-1 rounded-lg bg-muted/50 p-1 backdrop-blur-sm border border-border/50',
                 className,
             )}
             {...props}
@@ -28,14 +28,14 @@ export default function AppearanceToggleTab({
                     key={value}
                     onClick={() => updateAppearance(value)}
                     className={cn(
-                        'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
+                        'flex items-center rounded-md px-3.5 py-1.5 transition-all duration-200 hover-lift',
                         appearance === value
-                            ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
-                            : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
+                            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                     )}
                 >
                     <Icon className="-ml-1 h-4 w-4" />
-                    <span className="ml-1.5 text-sm">{label}</span>
+                    <span className="ml-1.5 text-sm font-medium">{label}</span>
                 </button>
             ))}
         </div>

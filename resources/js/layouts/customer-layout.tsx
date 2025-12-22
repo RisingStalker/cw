@@ -1,4 +1,4 @@
-import FlashMessage from '@/components/flash-message';
+import FlashToast from '@/components/flash-toast';
 import { CustomerHeader } from '@/components/customer-header';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
@@ -12,9 +12,9 @@ export default function CustomerLayout({
 }: CustomerLayoutProps) {
     return (
         <div className="flex min-h-screen flex-col">
+            <FlashToast />
             <CustomerHeader />
             <main className="flex-1">
-                <FlashMessage className="container mx-auto px-4 pt-4 md:px-6" />
                 <div className="container mx-auto px-4 py-6 md:px-6">
                     {children}
                 </div>

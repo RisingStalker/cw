@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/flash-message';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -43,10 +42,9 @@ export default function PriceTablesEdit() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <FlashMessage />
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">Edit Price Table</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">Edit Price Table</h1>
                     <p className="text-sm text-muted-foreground">
                         Update price table details.
                     </p>

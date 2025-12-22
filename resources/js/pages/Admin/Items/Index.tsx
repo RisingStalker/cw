@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/flash-message';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -81,22 +80,21 @@ export default function ItemsIndex() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <FlashMessage />
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold">Items</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">Items</h1>
                     <p className="text-sm text-muted-foreground">
                         Manage items, images, and variations.
                     </p>
                 </div>
-                <Button asChild>
-                    <Link href={admin.items.create().url}>New Item</Link>
+                <Button asChild size="lg">
+                    <Link href={admin.items.create().url}>+ New Item</Link>
                 </Button>
             </div>
 
-            <Card className="mt-4">
+            <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle>Filters</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Search Items</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -104,9 +102,10 @@ export default function ItemsIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search title or description"
+                            placeholder="Search title or description..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
+                            className="flex-1"
                         />
                         <select
                             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -138,30 +137,31 @@ export default function ItemsIndex() {
                 </CardContent>
             </Card>
 
-            <Card className="mt-4">
+            <Card>
                 <CardHeader>
-                    <CardTitle>Items</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Item List</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
-                            <tr className="text-left">
-                                <th className="py-2">Title</th>
-                                <th className="py-2">Category</th>
-                                <th className="py-2">Cost</th>
-                                <th className="py-2">Flags</th>
-                                <th className="py-2">Images</th>
-                                <th className="py-2">Variations</th>
-                                <th className="py-2 text-right">Actions</th>
+                            <tr className="text-left border-b border-border/50">
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Title</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Category</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Cost</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Flags</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Images</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Variations</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {items.data.map((item) => (
+                            {items.data.map((item, index) => (
                                 <tr
                                     key={item.id}
-                                    className="border-t border-border/70"
+                                    className="border-b border-border/30 hover:bg-accent/30 transition-colors duration-150"
+                                    style={{ animationDelay: `${index * 50}ms` }}
                                 >
-                                    <td className="py-2">
+                                    <td className="py-3 px-2">
                                         <div className="font-medium">
                                             {item.title}
                                         </div>
@@ -171,17 +171,17 @@ export default function ItemsIndex() {
                                             </div>
                                         )}
                                     </td>
-                                    <td className="py-2 text-muted-foreground">
+                                    <td className="py-3 px-2 text-muted-foreground">
                                         {item.category?.name ?? '—'}
                                     </td>
-                                    <td className="py-2">
+                                    <td className="py-3 px-2">
                                         {item.additional_cost
                                             ? `€${parseFloat(item.additional_cost).toFixed(2)}`
                                             : item.consultation_required
                                                 ? 'Consultation'
                                                 : '—'}
                                     </td>
-                                    <td className="py-2">
+                                    <td className="py-3 px-2">
                                         <div className="flex flex-wrap gap-1">
                                             {item.is_standard && (
                                                 <span className="rounded bg-blue-100 px-1.5 py-0.5 text-xs text-blue-800 dark:bg-blue-900 dark:text-blue-200">
@@ -205,13 +205,17 @@ export default function ItemsIndex() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="py-2">
-                                        {item.images_count ?? 0}
+                                    <td className="py-3 px-2">
+                                        <span className="inline-flex items-center justify-center min-w-[2rem] h-6 px-2 rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {item.images_count ?? 0}
+                                        </span>
                                     </td>
-                                    <td className="py-2">
-                                        {item.variations_count ?? 0}
+                                    <td className="py-3 px-2">
+                                        <span className="inline-flex items-center justify-center min-w-[2rem] h-6 px-2 rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {item.variations_count ?? 0}
+                                        </span>
                                     </td>
-                                    <td className="py-2 text-right">
+                                    <td className="py-3 px-2 text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button
                                                 variant="outline"
@@ -242,10 +246,13 @@ export default function ItemsIndex() {
                             {items.data.length === 0 && (
                                 <tr>
                                     <td
-                                        className="py-4 text-center text-muted-foreground"
+                                        className="py-12 text-center text-muted-foreground"
                                         colSpan={7}
                                     >
-                                        No items found.
+                                        <div className="flex flex-col items-center gap-2">
+                                            <p className="text-base">No items found.</p>
+                                            <p className="text-sm opacity-70">Create your first item to get started.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}

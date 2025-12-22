@@ -53,6 +53,9 @@ return [
     'customer_updated' => 'Customer updated successfully',
     'customer_deleted' => 'Customer deleted successfully',
     'login_credentials_sent' => 'Login credentials have been sent to the customer via email',
+    'account_registered' => 'Your account has been registered',
+    'account_registered_message' => 'You have been successfully registered on our site. Below are your login credentials:',
+    'use_credentials_to_login' => 'You can use these credentials to log in to your account.',
 
     // Construction Projects
     'projects' => 'Construction Projects',

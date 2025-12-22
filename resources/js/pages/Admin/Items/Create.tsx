@@ -121,7 +121,7 @@ export default function ItemsCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">New Item</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">New Item</h1>
                     <p className="text-sm text-muted-foreground">
                         Create a new item with images, variations, and pricing.
                     </p>

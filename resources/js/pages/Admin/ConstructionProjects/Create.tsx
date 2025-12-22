@@ -80,7 +80,7 @@ export default function ConstructionProjectsCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">
+                    <h1 className="text-3xl font-bold gradient-text mb-2">
                         New Construction Project
                     </h1>
                     <p className="text-sm text-muted-foreground">

@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/flash-message';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -108,10 +107,7 @@ export default function ItemsEdit() {
         }
         router.delete(
             admin.items.images.destroy({ item: item.id, image: imageId }).url,
-            {},
-            {
-                preserveScroll: true,
-            },
+            { preserveScroll: true },
         );
     };
 
@@ -171,10 +167,9 @@ export default function ItemsEdit() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <FlashMessage />
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">Edit Item</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">Edit Item</h1>
                     <p className="text-sm text-muted-foreground">
                         Update item details, images, variations, and pricing.
                     </p>

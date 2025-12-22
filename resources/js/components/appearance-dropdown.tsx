@@ -33,30 +33,38 @@ export default function AppearanceToggleDropdown({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 rounded-md"
+                        className="h-9 w-9 rounded-md hover:bg-accent/50 transition-all duration-200"
+                        title="Toggle theme"
                     >
                         {getCurrentIcon()}
                         <span className="sr-only">Toggle theme</span>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => updateAppearance('light')}>
+                <DropdownMenuContent align="end" className="min-w-[140px]">
+                    <DropdownMenuItem 
+                        onClick={() => updateAppearance('light')}
+                        className={appearance === 'light' ? 'bg-accent' : ''}
+                    >
                         <span className="flex items-center gap-2">
-                            <Sun className="h-5 w-5" />
+                            <Sun className="h-4 w-4" />
                             Light
                         </span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => updateAppearance('dark')}>
+                    <DropdownMenuItem 
+                        onClick={() => updateAppearance('dark')}
+                        className={appearance === 'dark' ? 'bg-accent' : ''}
+                    >
                         <span className="flex items-center gap-2">
-                            <Moon className="h-5 w-5" />
+                            <Moon className="h-4 w-4" />
                             Dark
                         </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => updateAppearance('system')}
+                        className={appearance === 'system' ? 'bg-accent' : ''}
                     >
                         <span className="flex items-center gap-2">
-                            <Monitor className="h-5 w-5" />
+                            <Monitor className="h-4 w-4" />
                             System
                         </span>
                     </DropdownMenuItem>

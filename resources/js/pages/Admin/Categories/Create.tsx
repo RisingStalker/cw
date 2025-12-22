@@ -31,7 +31,7 @@ export default function CategoriesCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">New Category</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">New Category</h1>
                     <p className="text-sm text-muted-foreground">
                         Create a new category for organizing items.
                     </p>

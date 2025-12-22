@@ -46,7 +46,7 @@ Route::prefix('admin')->group(function () {
 // Admin authenticated routes
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('admin/dashboard', function () {
-        return Inertia::render('dashboard');
+        return Inertia::render('Admin/Dashboard/index');
     })->name('admin.dashboard');
 
     Route::prefix('admin')->name('admin.')->group(function () {

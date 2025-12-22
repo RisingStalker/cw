@@ -73,23 +73,23 @@ export default function ConstructionProjectsIndex() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold">Construction Projects</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">Construction Projects</h1>
                     <p className="text-sm text-muted-foreground">
                         Manage projects and price table assignments.
                     </p>
                 </div>
-                <Button asChild>
+                <Button asChild size="lg">
                     <Link href={admin.constructionProjects.create().url}>
-                        New Project
+                        + New Project
                     </Link>
                 </Button>
             </div>
 
-            <Card className="mt-4">
+            <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle>Filters</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Search Projects</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -97,9 +97,10 @@ export default function ConstructionProjectsIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search project or customer"
+                            placeholder="Search project or customer..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
+                            className="flex-1"
                         />
                         <select
                             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -133,50 +134,57 @@ export default function ConstructionProjectsIndex() {
                 </CardContent>
             </Card>
 
-            <Card className="mt-4">
+            <Card>
                 <CardHeader>
-                    <CardTitle>Projects</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Project List</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
-                            <tr className="text-left">
-                                <th className="py-2">Name</th>
-                                <th className="py-2">Customer</th>
-                                <th className="py-2">Price Table</th>
-                                <th className="py-2">Rooms</th>
-                                <th className="py-2">Bathrooms</th>
-                                <th className="py-2">Configs</th>
-                                <th className="py-2 text-right">Actions</th>
+                            <tr className="text-left border-b border-border/50">
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Name</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Customer</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Price Table</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Rooms</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Bathrooms</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">Configs</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {projects.data.map((project) => (
+                            {projects.data.map((project, index) => (
                                 <tr
                                     key={project.id}
-                                    className="border-t border-border/70"
+                                    className="border-b border-border/30 hover:bg-accent/30 transition-colors duration-150"
+                                    style={{ animationDelay: `${index * 50}ms` }}
                                 >
-                                    <td className="py-2">{project.name}</td>
-                                    <td className="py-2 text-muted-foreground">
+                                    <td className="py-3 px-2 font-medium">{project.name}</td>
+                                    <td className="py-3 px-2 text-muted-foreground">
                                         {project.customer?.name}
                                     </td>
-                                    <td className="py-2">
+                                    <td className="py-3 px-2">
                                         {project.manual_price_table
                                             ? `Manual: ${project.manual_price_table.year}`
                                             : project.price_table
                                                 ? `Auto: ${project.price_table.year}`
                                                 : '—'}
                                     </td>
-                                    <td className="py-2">
-                                        {project.rooms_count ?? 0}
+                                    <td className="py-3 px-2">
+                                        <span className="inline-flex items-center justify-center min-w-[2rem] h-6 px-2 rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {project.rooms_count ?? 0}
+                                        </span>
                                     </td>
-                                    <td className="py-2">
-                                        {project.bathrooms_count ?? 0}
+                                    <td className="py-3 px-2">
+                                        <span className="inline-flex items-center justify-center min-w-[2rem] h-6 px-2 rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {project.bathrooms_count ?? 0}
+                                        </span>
                                     </td>
-                                    <td className="py-2">
-                                        {project.configurations_count ?? 0}
+                                    <td className="py-3 px-2">
+                                        <span className="inline-flex items-center justify-center min-w-[2rem] h-6 px-2 rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {project.configurations_count ?? 0}
+                                        </span>
                                     </td>
-                                    <td className="py-2 text-right">
+                                    <td className="py-3 px-2 text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button
                                                 variant="outline"
@@ -207,10 +215,13 @@ export default function ConstructionProjectsIndex() {
                             {projects.data.length === 0 && (
                                 <tr>
                                     <td
-                                        className="py-4 text-center text-muted-foreground"
+                                        className="py-12 text-center text-muted-foreground"
                                         colSpan={7}
                                     >
-                                        No projects found.
+                                        <div className="flex flex-col items-center gap-2">
+                                            <p className="text-base">No projects found.</p>
+                                            <p className="text-sm opacity-70">Create your first project to get started.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}

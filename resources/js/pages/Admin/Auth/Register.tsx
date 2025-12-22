@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/flash-message';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,8 +25,6 @@ export default function AdminRegister() {
             description="Sign up to access the admin panel"
         >
             <Head title="Admin Registration" />
-
-            <FlashMessage className="mb-4" />
 
             <form onSubmit={submit} className="flex flex-col gap-6">
                 <div className="grid gap-6">
