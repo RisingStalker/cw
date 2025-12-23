@@ -3,9 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Public landing page
+Route::get('/', function () {
+    return Inertia::render('Landing');
+})->name('home');
+
 // Customer routes (default - no prefix)
 // Customer authentication
-Route::get('/', [\App\Http\Controllers\Customer\Auth\LoginController::class, 'create'])->name('home');
 Route::get('login', [\App\Http\Controllers\Customer\Auth\LoginController::class, 'create'])->name('login');
 Route::post('login', [\App\Http\Controllers\Customer\Auth\LoginController::class, 'store']);
 Route::get('register', [\App\Http\Controllers\Customer\Auth\RegisterController::class, 'create'])->name('register');

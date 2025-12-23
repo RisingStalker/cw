@@ -1,3 +1,4 @@
+import AppearanceToggleDropdown from '@/components/appearance-dropdown';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,8 +51,9 @@ export function CustomerHeader() {
                     </Link>
                 </nav>
 
-                {/* Right Side - User Menu */}
-                <div className="flex items-center space-x-4">
+                {/* Right Side - Theme + User Menu */}
+                <div className="flex items-center space-x-3">
+                    <AppearanceToggleDropdown className="hidden sm:block" />
                     {customer ? (
                         <>
                             {/* Desktop User Menu */}
@@ -124,7 +126,10 @@ export function CustomerHeader() {
                                 </SheetTrigger>
                                 <SheetContent side="right">
                                     <SheetHeader>
-                                        <SheetTitle>Menu</SheetTitle>
+                                        <SheetTitle className="flex items-center justify-between">
+                                            <span>Menu</span>
+                                            <AppearanceToggleDropdown />
+                                        </SheetTitle>
                                     </SheetHeader>
                                     <div className="mt-6 flex flex-col space-y-4">
                                         <Link
