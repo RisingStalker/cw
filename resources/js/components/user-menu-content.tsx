@@ -12,12 +12,14 @@ import { edit } from '@/routes/profile';
 import { type User } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 interface UserMenuContentProps {
     user: User;
 }
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
+    const translations = useTranslations();
     const cleanup = useMobileNavigation();
     const { url } = usePage();
     
@@ -48,7 +50,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                         onClick={cleanup}
                     >
                         <Settings className="mr-2" />
-                        Settings
+                        {t('settings', translations)}
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -59,7 +61,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                 data-test="logout-button"
             >
                 <LogOut className="mr-2 h-4 w-4" />
-                Log out
+                {t('log_out', translations)}
             </DropdownMenuItem>
         </>
     );

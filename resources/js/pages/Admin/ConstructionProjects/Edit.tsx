@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type Customer = { id: number; name: string; email: string };
 type PriceTable = { id: number; year: number };
@@ -44,6 +45,7 @@ const normalizeRooms = (rooms: Room[]): Room[] =>
     }));
 
 export default function ConstructionProjectsEdit() {
+    const translations = useTranslations();
     const { project, customers, priceTables } = usePage<PageProps>().props;
 
     const { data, setData, put, processing, errors } = useForm({
@@ -62,7 +64,7 @@ export default function ConstructionProjectsEdit() {
     });
 
     const breadcrumbs = [
-        { title: 'Projects', href: admin.constructionProjects.index().url },
+        { title: t('projects', translations), href: admin.constructionProjects.index().url },
         { title: project.name, href: admin.constructionProjects.edit(project.id).url },
     ];
 
@@ -91,30 +93,30 @@ export default function ConstructionProjectsEdit() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Edit Construction Project</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('edit_construction_project', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Update project details, rooms, and bathrooms.
+                        {t('update_project_details', translations)}
                     </p>
                 </div>
                 <Button variant="outline" asChild>
-                    <Link href={admin.constructionProjects.index().url}>Back</Link>
+                    <Link href={admin.constructionProjects.index().url}>{t('back', translations)}</Link>
                 </Button>
             </div>
 
             <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Project Details</CardTitle>
+                        <CardTitle>{t('project_details', translations)}</CardTitle>
                     </CardHeader>
                     <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Customer</label>
+                            <label className="text-sm font-medium">{t('customer', translations)}</label>
                             <select
                                 className="rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 value={data.customer_id}
                                 onChange={(e) => setData('customer_id', e.target.value)}
                             >
-                                <option value="">Select customer</option>
+                                <option value="">{t('select_customer', translations)}</option>
                                 {customers.map((c) => (
                                     <option key={c.id} value={c.id}>
                                         {c.name} ({c.email})
@@ -127,7 +129,7 @@ export default function ConstructionProjectsEdit() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Name</label>
+                            <label className="text-sm font-medium">{t('name', translations)}</label>
                             <Input
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
@@ -138,7 +140,7 @@ export default function ConstructionProjectsEdit() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Facade area (m²)</label>
+                            <label className="text-sm font-medium">{t('facade_area_m2', translations)}</label>
                             <Input
                                 type="number"
                                 min="0"
@@ -152,7 +154,7 @@ export default function ConstructionProjectsEdit() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Balcony meters</label>
+                            <label className="text-sm font-medium">{t('balcony_meters', translations)}</label>
                             <Input
                                 type="number"
                                 min="0"
@@ -168,7 +170,7 @@ export default function ConstructionProjectsEdit() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Interior balustrade meters</label>
+                            <label className="text-sm font-medium">{t('interior_balustrade_meters', translations)}</label>
                             <Input
                                 type="number"
                                 min="0"
@@ -186,7 +188,7 @@ export default function ConstructionProjectsEdit() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Manual price table (optional)</label>
+                            <label className="text-sm font-medium">{t('manual_price_table_optional', translations)}</label>
                             <select
                                 className="rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 value={data.manual_price_table_id ?? ''}
@@ -194,7 +196,7 @@ export default function ConstructionProjectsEdit() {
                                     setData('manual_price_table_id', e.target.value)
                                 }
                             >
-                                <option value="">Auto (by year)</option>
+                                <option value="">{t('auto_by_year', translations)}</option>
                                 {priceTables.map((p) => (
                                     <option key={p.id} value={p.id}>
                                         {p.year}
@@ -212,7 +214,7 @@ export default function ConstructionProjectsEdit() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Rooms</CardTitle>
+                        <CardTitle>{t('rooms', translations)}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {data.rooms.map((room, index) => (
@@ -221,14 +223,14 @@ export default function ConstructionProjectsEdit() {
                                 className="grid grid-cols-1 gap-3 md:grid-cols-3"
                             >
                                 <Input
-                                    placeholder="Room name"
+                                    placeholder={t('room_name', translations)}
                                     value={room.name}
                                     onChange={(e) =>
                                         updateRoom(index, 'name', e.target.value)
                                     }
                                 />
                                 <Input
-                                    placeholder="Floor space (m²)"
+                                    placeholder={t('floor_space_m2', translations)}
                                     type="number"
                                     min="0"
                                     step="0.01"
@@ -238,7 +240,7 @@ export default function ConstructionProjectsEdit() {
                                     }
                                 />
                                 <Input
-                                    placeholder="Prohibited floors (comma-separated)"
+                                    placeholder={t('prohibited_floors_comma_separated', translations)}
                                     value={room.prohibited_floors ?? ''}
                                     onChange={(e) =>
                                         updateRoom(
@@ -261,7 +263,7 @@ export default function ConstructionProjectsEdit() {
                                     ])
                                 }
                             >
-                                Add room
+                                {t('add_room', translations)}
                             </Button>
                         </div>
                         {errors.rooms && (
@@ -274,7 +276,7 @@ export default function ConstructionProjectsEdit() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Bathrooms</CardTitle>
+                        <CardTitle>{t('bathrooms', translations)}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {data.bathrooms.map((bathroom, index) => (
@@ -283,7 +285,7 @@ export default function ConstructionProjectsEdit() {
                                 className="grid grid-cols-1 gap-3 md:grid-cols-4"
                             >
                                 <Input
-                                    placeholder="Room number"
+                                    placeholder={t('room_number', translations)}
                                     type="number"
                                     min="1"
                                     value={bathroom.room_number}
@@ -307,7 +309,7 @@ export default function ConstructionProjectsEdit() {
                                             )
                                         }
                                     />
-                                    Toilet
+                                    {t('toilet', translations)}
                                 </label>
                                 <label className="flex items-center gap-2 text-sm">
                                     <input
@@ -321,7 +323,7 @@ export default function ConstructionProjectsEdit() {
                                             )
                                         }
                                     />
-                                    Shower
+                                    {t('shower', translations)}
                                 </label>
                                 <label className="flex items-center gap-2 text-sm">
                                     <input
@@ -335,7 +337,7 @@ export default function ConstructionProjectsEdit() {
                                             )
                                         }
                                     />
-                                    Bathtub
+                                    {t('bathtub', translations)}
                                 </label>
                             </div>
                         ))}
@@ -355,7 +357,7 @@ export default function ConstructionProjectsEdit() {
                                     ])
                                 }
                             >
-                                Add bathroom
+                                {t('add_bathroom', translations)}
                             </Button>
                         </div>
                         {errors.bathrooms && (
@@ -369,11 +371,11 @@ export default function ConstructionProjectsEdit() {
                 <div className="flex justify-end gap-2">
                     <Button type="button" variant="secondary" asChild>
                         <Link href={admin.constructionProjects.index().url}>
-                            Cancel
+                            {t('cancel', translations)}
                         </Link>
                     </Button>
                     <Button type="submit" disabled={processing}>
-                        {processing ? 'Saving...' : 'Save'}
+                        {processing ? t('saving', translations) : t('save', translations)}
                     </Button>
                 </div>
             </form>

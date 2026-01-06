@@ -11,6 +11,7 @@ import { index as configurationsIndex, update as updateConfiguration } from '@/r
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, ChevronDown, ChevronRight, Save } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 interface ItemVariation {
     id: number;
@@ -104,6 +105,7 @@ interface SelectedItem {
 }
 
 export default function ConfigurationWizard({ project, configuration, categories, priceTable }: PageProps) {
+    const translations = useTranslations();
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
     const [expandedRooms, setExpandedRooms] = useState<Set<number>>(new Set());
@@ -318,24 +320,24 @@ export default function ConfigurationWizard({ project, configuration, categories
                         <Link href={configurationsIndex({ project: project.id }).url}>
                             <Button variant="ghost" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back
-                            </Button>
-                        </Link>
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight">{configuration.name}</h1>
-                            <p className="text-muted-foreground mt-2">Configure your project: {project.name}</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="text-right">
-                            <div className="text-sm text-muted-foreground">Total Additional Cost</div>
-                            <div className="text-2xl font-bold">€{totalCost.toFixed(2)}</div>
-                        </div>
-                        <Button onClick={handleSave} disabled={processing}>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Progress
+                                {t('back', translations)}
                         </Button>
+                    </Link>
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">{configuration.name}</h1>
+                        <p className="text-muted-foreground mt-2">{t('configure_project', translations)}: {project.name}</p>
                     </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <div className="text-right">
+                        <div className="text-sm text-muted-foreground">{t('total_additional_cost', translations)}</div>
+                        <div className="text-2xl font-bold">€{totalCost.toFixed(2)}</div>
+                    </div>
+                    <Button onClick={handleSave} disabled={processing}>
+                        <Save className="mr-2 h-4 w-4" />
+                        {t('save_progress', translations)}
+                    </Button>
+                </div>
                 </div>
 
                 {/* Progress */}
@@ -343,7 +345,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                     <CardContent className="pt-6">
                         <div className="mb-2 flex items-center justify-between text-sm">
                             <span>
-                                Category {currentCategoryIndex + 1} of {categories.length}: {currentCategory?.name}
+                                {t('category_of', translations)} {currentCategoryIndex + 1} {t('of', translations)} {categories.length}: {currentCategory?.name}
                             </span>
                             <span>{Math.round(progress)}%</span>
                         </div>
@@ -371,7 +373,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                         <Card>
                             <CardHeader>
                                 <CardTitle>{currentCategory.name}</CardTitle>
-                                <CardDescription>Select items for this category</CardDescription>
+                                <CardDescription>{t('select_items_for_category', translations)}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {/* Standard option (must be selected) */}
@@ -391,7 +393,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                     <p className="text-sm text-muted-foreground">{item.description}</p>
                                                 )}
                                                 <div className="mt-2 text-sm font-medium text-green-600">
-                                                    Standard Option (No Extra Cost) - Required
+                                                    {t('standard_option_required', translations)}
                                                 </div>
                                             </div>
                                         </div>
@@ -401,7 +403,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {currentCategory.name.toLowerCase().includes('electrical') && (
                                     <div className="rounded-lg border-2 border-orange-200 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-950">
                                         <p className="font-medium text-orange-800 dark:text-orange-200">
-                                            Note: You will receive a separate quote for electrical installation.
+                                            {t('electrical_installation_note', translations)}
                                         </p>
                                     </div>
                                 )}
@@ -409,7 +411,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Room-specific items (e.g., flooring) */}
                                 {project.rooms.length > 0 && currentCategory.name.toLowerCase().includes('floor') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">Room Flooring</h3>
+                                        <h3 className="font-medium">{t('room_flooring', translations)}</h3>
                                         {project.rooms.map((room) => (
                                             <Collapsible
                                                 key={room.id}
@@ -480,7 +482,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Bathroom-specific items */}
                                 {project.bathrooms.length > 0 && currentCategory.name.toLowerCase().includes('bathroom') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">Bathroom Options</h3>
+                                        <h3 className="font-medium">{t('bathroom_options', translations)}</h3>
                                         {project.bathrooms.map((bathroom) => (
                                             <Collapsible
                                                 key={bathroom.id}
@@ -497,10 +499,10 @@ export default function ConfigurationWizard({ project, configuration, categories
                                             >
                                                 <CollapsibleTrigger asChild>
                                                     <Button variant="outline" className="w-full justify-between">
-                                                        Bathroom {bathroom.room_number}
-                                                        {bathroom.has_toilet && <span className="ml-2 text-xs">Toilet</span>}
-                                                        {bathroom.has_shower && <span className="ml-2 text-xs">Shower</span>}
-                                                        {bathroom.has_bathtub && <span className="ml-2 text-xs">Bathtub</span>}
+                                                        {t('bathroom', translations)} {bathroom.room_number}
+                                                        {bathroom.has_toilet && <span className="ml-2 text-xs">{t('toilet', translations)}</span>}
+                                                        {bathroom.has_shower && <span className="ml-2 text-xs">{t('shower', translations)}</span>}
+                                                        {bathroom.has_bathtub && <span className="ml-2 text-xs">{t('bathtub', translations)}</span>}
                                                         <ChevronDown className="h-4 w-4" />
                                                     </Button>
                                                 </CollapsibleTrigger>
@@ -545,9 +547,9 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Facade items */}
                                 {currentCategory.name.toLowerCase().includes('facade') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">Facade Options</h3>
+                                        <h3 className="font-medium">{t('facade_options', translations)}</h3>
                                         <p className="text-sm text-muted-foreground">
-                                            Facade area: {project.facade_area} m²
+                                            {t('facade_area', translations)}: {project.facade_area} m²
                                         </p>
                                         {currentCategory.items
                                             .filter((item) => !item.is_standard)
@@ -589,9 +591,9 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Ventilation items */}
                                 {currentCategory.name.toLowerCase().includes('ventilation') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">Ventilation System</h3>
+                                        <h3 className="font-medium">{t('ventilation_system', translations)}</h3>
                                         <p className="text-sm text-muted-foreground">
-                                            Number of rooms: {project.rooms.length}
+                                            {t('number_of_rooms', translations)}: {project.rooms.length}
                                         </p>
                                         {currentCategory.items
                                             .filter((item) => !item.is_standard)
@@ -620,7 +622,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                                     €{(parseFloat(item.additional_cost || '0') * project.rooms.length).toFixed(2)}
                                                                 </div>
                                                                 <div className="text-xs text-muted-foreground">
-                                                                    (€{parseFloat(item.additional_cost || '0').toFixed(2)} × {project.rooms.length} rooms)
+                                                                    (€{parseFloat(item.additional_cost || '0').toFixed(2)} × {project.rooms.length} {t('rooms', translations)})
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -663,7 +665,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                                 )}
                                                                 {item.consultation_required && (
                                                                     <p className="mt-1 text-sm font-medium text-orange-600">
-                                                                        Consultation Required
+                                                                        {t('consultation_required', translations)}
                                                                     </p>
                                                                 )}
                                                             </div>
@@ -678,7 +680,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                             <div className="mt-4 space-y-3">
                                                                 {item.variations.length > 0 && (
                                                                     <div>
-                                                                        <Label>Variation</Label>
+                                                                        <Label>{t('variation', translations)}</Label>
                                                                         <Select
                                                                             value={
                                                                                 selectedItems.find((si) => si.item_id === item.id)
@@ -692,10 +694,10 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                                             }
                                                                         >
                                                                             <SelectTrigger>
-                                                                                <SelectValue placeholder="Select variation" />
+                                                                                <SelectValue placeholder={t('select_variation_placeholder', translations)} />
                                                                             </SelectTrigger>
                                                                             <SelectContent>
-                                                                                <SelectItem value="">None</SelectItem>
+                                                                                <SelectItem value="">{t('none', translations)}</SelectItem>
                                                                                 {item.variations.map((variation) => (
                                                                                     <SelectItem
                                                                                         key={variation.id}
@@ -712,7 +714,7 @@ export default function ConfigurationWizard({ project, configuration, categories
 
                                                                 {item.requires_quantity && (
                                                                     <div>
-                                                                        <Label>Quantity</Label>
+                                                                        <Label>{t('quantity', translations)}</Label>
                                                                         <Input
                                                                             type="number"
                                                                             min="1"
@@ -743,15 +745,15 @@ export default function ConfigurationWizard({ project, configuration, categories
                 {/* Navigation Buttons */}
                 <div className="flex justify-between">
                     <Button onClick={prevCategory} disabled={currentCategoryIndex === 0} variant="outline">
-                        Previous
+                        {t('previous', translations)}
                     </Button>
                     <div className="flex gap-2">
                         <Button onClick={handleSave} variant="outline" disabled={processing}>
                             <Save className="mr-2 h-4 w-4" />
-                            Save & Exit
+                            {t('save_and_exit', translations)}
                         </Button>
                         <Button onClick={nextCategory} disabled={currentCategoryIndex === categories.length - 1}>
-                            Next
+                            {t('next', translations)}
                             <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>

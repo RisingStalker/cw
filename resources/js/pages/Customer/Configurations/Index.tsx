@@ -2,7 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import CustomerLayout from '@/layouts/customer-layout';
 import { index as projectsIndex } from '@/routes/projects';
-import { create as createConfiguration, show as showConfiguration, lock, copy, destroy, exportMethod as exportConfiguration } from '@/routes/configurations';
+import { create as createConfiguration, show as showConfiguration, wizard as wizardConfiguration, lock, copy, destroy, exportMethod as exportConfiguration } from '@/routes/configurations';
+import { useTranslations, t } from '@/hooks/use-translations';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Copy, Download, Lock, Plus, Trash2 } from 'lucide-react';
 
@@ -25,9 +26,10 @@ interface PageProps {
 }
 
 export default function ConfigurationsIndex({ project, configurations }: PageProps) {
+    const translations = useTranslations();
 
     const handleLock = (configId: number) => {
-        if (confirm('Are you sure you want to lock this configuration? It cannot be edited after locking.')) {
+        if (confirm(t('confirm_lock_configuration', translations))) {
             router.post(lock({ project: project.id, configuration: configId }).url);
         }
     };
@@ -37,7 +39,7 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
     };
 
     const handleDelete = (configId: number) => {
-        if (confirm('Are you sure you want to delete this configuration?')) {
+        if (confirm(t('confirm_delete_configuration', translations))) {
             router.delete(destroy({ project: project.id, configuration: configId }).url);
         }
     };
@@ -52,18 +54,18 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
                         <Link href={projectsIndex().url}>
                             <Button variant="ghost" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Projects
+                                {t('back_to_projects', translations)}
                             </Button>
                         </Link>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-                            <p className="text-muted-foreground mt-2">Manage your configurations</p>
+                            <p className="text-muted-foreground mt-2">{t('manage_configurations', translations)}</p>
                         </div>
                     </div>
                     <Link href={createConfiguration({ project: project.id }).url}>
                         <Button>
                             <Plus className="mr-2 h-4 w-4" />
-                            New Configuration
+                            {t('new_configuration', translations)}
                         </Button>
                     </Link>
                 </div>
@@ -71,11 +73,11 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
                 {configurations.length === 0 ? (
                     <Card>
                         <CardContent className="flex flex-col items-center justify-center py-12">
-                            <p className="mb-4 text-muted-foreground">No configurations yet</p>
+                            <p className="mb-4 text-muted-foreground">{t('no_configurations_yet', translations)}</p>
                             <Link href={createConfiguration({ project: project.id }).url}>
                                 <Button>
                                     <Plus className="mr-2 h-4 w-4" />
-                                    Create First Configuration
+                                    {t('create_first_configuration', translations)}
                                 </Button>
                             </Link>
                         </CardContent>
@@ -89,17 +91,17 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
                                         <div>
                                             <CardTitle>{config.name}</CardTitle>
                                             <CardDescription>
-                                                Created {new Date(config.created_at).toLocaleDateString()}
+                                                {t('created', translations)} {new Date(config.created_at).toLocaleDateString()}
                                             </CardDescription>
                                         </div>
                                         {config.is_locked && (
                                             <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                Locked
+                                                {t('is_locked', translations)}
                                             </span>
                                         )}
                                         {config.is_completed && !config.is_locked && (
                                             <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                                Completed
+                                                {t('is_completed', translations)}
                                             </span>
                                         )}
                                     </div>
@@ -108,13 +110,13 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
                                     <div className="flex flex-wrap gap-2">
                                         <Link href={showConfiguration({ project: project.id, configuration: config.id }).url}>
                                             <Button size="sm" variant="outline">
-                                                View
+                                                {t('view', translations)}
                                             </Button>
                                         </Link>
                                         {!config.is_locked && (
-                                            <Link href={showConfiguration({ project: project.id, configuration: config.id }).url}>
+                                            <Link href={wizardConfiguration({ project: project.id, configuration: config.id }).url}>
                                                 <Button size="sm" variant="outline">
-                                                    Edit
+                                                    {t('edit', translations)}
                                                 </Button>
                                             </Link>
                                         )}
@@ -125,7 +127,7 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
                                                 onClick={() => handleLock(config.id)}
                                             >
                                                 <Lock className="mr-1 h-3 w-3" />
-                                                Lock
+                                                {t('lock', translations)}
                                             </Button>
                                         )}
                                         <Button
@@ -134,7 +136,7 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
                                             onClick={() => handleCopy(config.id)}
                                         >
                                             <Copy className="mr-1 h-3 w-3" />
-                                            Copy
+                                            {t('copy', translations)}
                                         </Button>
                                         <a
                                             href={exportConfiguration({ project: project.id, configuration: config.id }).url}
@@ -142,7 +144,7 @@ export default function ConfigurationsIndex({ project, configurations }: PagePro
                                         >
                                             <Button size="sm" variant="outline">
                                                 <Download className="mr-1 h-3 w-3" />
-                                                PDF
+                                                {t('pdf', translations)}
                                             </Button>
                                         </a>
                                         <Button

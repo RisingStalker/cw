@@ -6,8 +6,10 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { login, register } from '@/routes';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 export default function CustomerRegister() {
+    const translations = useTranslations();
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
@@ -22,15 +24,15 @@ export default function CustomerRegister() {
 
     return (
         <AuthLayout
-            title="Create Account"
-            description="Sign up to access your construction projects"
+            title={t('create_account_title', translations)}
+            description={t('sign_up_access_projects', translations)}
         >
-            <Head title="Customer Registration" />
+            <Head title={t('customer_registration', translations)} />
 
             <form onSubmit={submit} className="flex flex-col gap-6">
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name">{t('full_name', translations)}</Label>
                         <Input
                             id="name"
                             type="text"
@@ -40,13 +42,13 @@ export default function CustomerRegister() {
                             required
                             autoFocus
                             autoComplete="name"
-                            placeholder="John Doe"
+                            placeholder={t('name_placeholder', translations)}
                         />
                         <InputError message={errors.name} />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label htmlFor="email">{t('email_address', translations)}</Label>
                         <Input
                             id="email"
                             type="email"
@@ -55,13 +57,13 @@ export default function CustomerRegister() {
                             onChange={(e) => setData('email', e.target.value)}
                             required
                             autoComplete="email"
-                            placeholder="email@example.com"
+                            placeholder={t('email_placeholder', translations)}
                         />
                         <InputError message={errors.email} />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">{t('password', translations)}</Label>
                         <Input
                             id="password"
                             type="password"
@@ -70,16 +72,16 @@ export default function CustomerRegister() {
                             onChange={(e) => setData('password', e.target.value)}
                             required
                             autoComplete="new-password"
-                            placeholder="Password"
+                            placeholder={t('password_placeholder', translations)}
                         />
                         <InputError message={errors.password} />
                         <p className="text-sm text-muted-foreground">
-                            Must be at least 8 characters long
+                            {t('password_min_length', translations)}
                         </p>
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password_confirmation">Confirm Password</Label>
+                        <Label htmlFor="password_confirmation">{t('confirm_password', translations)}</Label>
                         <Input
                             id="password_confirmation"
                             type="password"
@@ -88,7 +90,7 @@ export default function CustomerRegister() {
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                             required
                             autoComplete="new-password"
-                            placeholder="Confirm Password"
+                            placeholder={t('confirm_password_placeholder', translations)}
                         />
                         <InputError message={errors.password_confirmation} />
                     </div>
@@ -99,14 +101,14 @@ export default function CustomerRegister() {
                         disabled={processing}
                     >
                         {processing && <Spinner />}
-                        Create Account
+                        {t('create_account_button', translations)}
                     </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
+                    {t('already_have_account', translations)}{' '}
                     <Link href={login().url} className="text-primary hover:underline">
-                        Sign in
+                        {t('sign_in', translations)}
                     </Link>
                 </div>
             </form>

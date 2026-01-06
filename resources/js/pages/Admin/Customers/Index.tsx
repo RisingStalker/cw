@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations, t } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, usePage } from '@inertiajs/react';
@@ -28,17 +29,18 @@ type PageProps = {
 };
 
 export default function CustomersIndex() {
+    const translations = useTranslations();
     const { customers, filters } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
 
     const breadcrumbs = useMemo(
         () => [
             {
-                title: 'Customers',
+                title: t('customers', translations),
                 href: admin.customers.index().url,
             },
         ],
-        [],
+        [translations],
     );
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -51,7 +53,7 @@ export default function CustomersIndex() {
     };
 
     const handleDelete = (customer: Customer) => {
-        if (!confirm('Delete this customer?')) {
+        if (!confirm(t('delete_customer', translations))) {
             return;
         }
 
@@ -62,19 +64,19 @@ export default function CustomersIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Customers</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('customers', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Manage customer accounts and login credentials.
+                        {t('manage_customer_accounts', translations)}
                     </p>
                 </div>
                 <Button asChild size="lg">
-                    <Link href={admin.customers.create().url}>+ New Customer</Link>
+                    <Link href={admin.customers.create().url}>+ {t('new_customer', translations)}</Link>
                 </Button>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Search Customers</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('search_customers', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -82,13 +84,13 @@ export default function CustomersIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search name or email..."
+                            placeholder={t('search_name_email', translations)}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="flex-1"
                         />
                         <div className="flex gap-2">
-                            <Button type="submit">Search</Button>
+                            <Button type="submit">{t('search', translations)}</Button>
                             <Button
                                 type="button"
                                 variant="secondary"
@@ -97,7 +99,7 @@ export default function CustomersIndex() {
                                     router.get(admin.customers.index().url);
                                 }}
                             >
-                                Reset
+                                {t('reset', translations)}
                             </Button>
                         </div>
                     </form>
@@ -106,16 +108,16 @@ export default function CustomersIndex() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Customer List</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('customer_list', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left border-b border-border/50">
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Name</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Email</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Projects</th>
-                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('name', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('email', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('projects', translations)}</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">{t('actions', translations)}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -146,7 +148,7 @@ export default function CustomersIndex() {
                                                         .edit(customer.id)
                                                         .url}
                                                 >
-                                                    Edit
+                                                    {t('edit', translations)}
                                                 </Link>
                                             </Button>
                                             <Button
@@ -156,7 +158,7 @@ export default function CustomersIndex() {
                                                     handleDelete(customer)
                                                 }
                                             >
-                                                Delete
+                                                {t('delete', translations)}
                                             </Button>
                                         </div>
                                     </td>
@@ -169,8 +171,8 @@ export default function CustomersIndex() {
                                         colSpan={4}
                                     >
                                         <div className="flex flex-col items-center gap-2">
-                                            <p className="text-base">No customers found.</p>
-                                            <p className="text-sm opacity-70">Create your first customer to get started.</p>
+                                            <p className="text-base">{t('no_customers_found', translations)}</p>
+                                            <p className="text-sm opacity-70">{t('create_first_customer', translations)}</p>
                                         </div>
                                     </td>
                                 </tr>

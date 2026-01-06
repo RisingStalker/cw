@@ -47,6 +47,13 @@ Route::prefix('admin')->group(function () {
     Route::post('logout', [\App\Http\Controllers\Admin\Auth\LoginController::class, 'destroy'])->name('admin.logout');
 });
 
+// Password confirmation route (required by password.confirm middleware)
+Route::middleware('auth')->group(function () {
+    Route::get('user/confirm-password', function () {
+        return Inertia::render('auth/confirm-password');
+    })->name('password.confirm');
+});
+
 // Admin authenticated routes
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('admin/dashboard', function () {

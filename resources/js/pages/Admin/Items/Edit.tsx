@@ -1,6 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -12,12 +18,13 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
-import { Plus, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Trash2, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type Category = { id: number; name: string };
 type PriceTable = { id: number; year: number };
-type ItemImage = { id: number; path: string; order: number };
+type ItemImage = { id: number; path: string; order: number; url: string };
 type ItemVariation = {
     id: number;
     type: 'size' | 'color';
@@ -40,9 +47,9 @@ type Item = {
     consultation_required: boolean;
     is_standard: boolean;
     hidden_until?: string;
-    images: ItemImage[];
-    variations: ItemVariation[];
-    priceTables: ItemPriceTable[];
+    images?: ItemImage[];
+    variations?: ItemVariation[];
+    priceTables?: ItemPriceTable[];
 };
 
 type PageProps = {
@@ -63,7 +70,13 @@ type PriceTableEntry = {
 };
 
 export default function ItemsEdit() {
+    const translations = useTranslations();
     const { item, categories, priceTables } = usePage<PageProps>().props;
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+    const [zoomLevel, setZoomLevel] = useState(1);
+    const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
     const { data, setData, put, processing, errors, delete: deleteMethod } =
         useForm({
@@ -78,20 +91,20 @@ export default function ItemsEdit() {
                 ? new Date(item.hidden_until).toISOString().split('T')[0]
                 : '',
             images: [] as File[],
-            variations: item.variations.map((v) => ({
+            variations: (item.variations || []).map((v) => ({
                 type: v.type,
                 name: v.name,
                 surcharge: v.surcharge,
             })) as Variation[],
-            price_tables: item.priceTables.map((pt) => ({
+            price_tables: (item.priceTables || []).map((pt) => ({
                 price_table_id: pt.id.toString(),
                 additional_cost: pt.pivot.additional_cost,
             })) as PriceTableEntry[],
         });
 
     const breadcrumbs = [
-        { title: 'Items', href: admin.items.index().url },
-        { title: 'Edit', href: admin.items.edit(item.id).url },
+        { title: t('items', translations), href: admin.items.index().url },
+        { title: t('edit', translations), href: admin.items.edit(item.id).url },
     ];
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -102,7 +115,7 @@ export default function ItemsEdit() {
     };
 
     const handleDeleteImage = (imageId: number) => {
-        if (!confirm('Delete this image?')) {
+        if (!confirm(t('delete_this_image', translations))) {
             return;
         }
         router.delete(
@@ -169,25 +182,25 @@ export default function ItemsEdit() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Edit Item</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('edit_item', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Update item details, images, variations, and pricing.
+                        {t('update_item_details', translations)}
                     </p>
                 </div>
                 <Button variant="outline" asChild>
-                    <Link href={admin.items.index().url}>Back</Link>
+                    <Link href={admin.items.index().url}>{t('back', translations)}</Link>
                 </Button>
             </div>
 
             <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Basic Information</CardTitle>
+                        <CardTitle>{t('basic_information', translations)}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Category *
+                                {t('category', translations)} *
                             </label>
                             <Select
                                 value={data.category_id}
@@ -196,7 +209,7 @@ export default function ItemsEdit() {
                                 }
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select category" />
+                                    <SelectValue placeholder={t('select_category', translations)} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {categories.map((category) => (
@@ -218,7 +231,7 @@ export default function ItemsEdit() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Title *
+                                {t('title', translations)} *
                             </label>
                             <Input
                                 value={data.title}
@@ -235,7 +248,7 @@ export default function ItemsEdit() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Description
+                                {t('description', translations)}
                             </label>
                             <textarea
                                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -253,7 +266,7 @@ export default function ItemsEdit() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Additional Cost (€) *
+                                {t('additional_cost', translations)} *
                             </label>
                             <Input
                                 type="number"
@@ -273,7 +286,7 @@ export default function ItemsEdit() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Hidden Until (Date)
+                                {t('hidden_until_date', translations)}
                             </label>
                             <Input
                                 type="date"
@@ -305,7 +318,7 @@ export default function ItemsEdit() {
                                     htmlFor="requires_quantity"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                    Customer can enter quantity
+                                    {t('customer_can_enter_quantity', translations)}
                                 </label>
                             </div>
 
@@ -324,7 +337,7 @@ export default function ItemsEdit() {
                                     htmlFor="consultation_required"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                    Consultation Required
+                                    {t('consultation_required', translations)}
                                 </label>
                             </div>
 
@@ -340,7 +353,7 @@ export default function ItemsEdit() {
                                     htmlFor="is_standard"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                    Standard Option (no extra cost)
+                                    {t('standard_option_no_extra_cost', translations)}
                                 </label>
                             </div>
                         </div>
@@ -349,29 +362,31 @@ export default function ItemsEdit() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Images</CardTitle>
+                        <CardTitle>{t('images', translations)}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {item.images.length > 0 && (
+                        {item.images && item.images.length > 0 && (
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                                {item.images.map((image) => (
+                                {item.images.map((image, index) => (
                                     <div
                                         key={image.id}
-                                        className="relative aspect-square overflow-hidden rounded-lg border"
+                                        className="relative aspect-square overflow-hidden rounded-lg border cursor-pointer group"
+                                        onClick={() => setSelectedImageIndex(index)}
                                     >
                                         <img
-                                            src={`/storage/${image.path}`}
+                                            src={image.url}
                                             alt="Item"
-                                            className="h-full w-full object-cover"
+                                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
                                         />
                                         <Button
                                             type="button"
                                             variant="destructive"
                                             size="sm"
-                                            className="absolute right-2 top-2"
-                                            onClick={() =>
-                                                handleDeleteImage(image.id)
-                                            }
+                                            className="absolute right-2 top-2 z-10"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteImage(image.id);
+                                            }}
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -388,7 +403,7 @@ export default function ItemsEdit() {
                             />
                             {data.images.length > 0 && (
                                 <p className="text-sm text-muted-foreground">
-                                    {data.images.length} new image(s) selected
+                                    {data.images.length} new {t('images_selected', translations)}
                                 </p>
                             )}
                             {errors.images && (
@@ -402,7 +417,7 @@ export default function ItemsEdit() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle>Variations</CardTitle>
+                        <CardTitle>{t('variations', translations)}</CardTitle>
                         <Button
                             type="button"
                             variant="outline"
@@ -410,7 +425,7 @@ export default function ItemsEdit() {
                             onClick={addVariation}
                         >
                             <Plus className="mr-2 h-4 w-4" />
-                            Add Variation
+                            {t('add_variation', translations)}
                         </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -433,14 +448,14 @@ export default function ItemsEdit() {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="size">Size</SelectItem>
+                                        <SelectItem value="size">{t('size', translations)}</SelectItem>
                                         <SelectItem value="color">
-                                            Color
+                                            {t('color', translations)}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <Input
-                                    placeholder="Name (e.g., Large, Red)"
+                                    placeholder={t('name_placeholder', translations)}
                                     value={variation.name}
                                     onChange={(e) =>
                                         updateVariation(
@@ -455,7 +470,7 @@ export default function ItemsEdit() {
                                     type="number"
                                     step="0.01"
                                     min="0"
-                                    placeholder="Surcharge"
+                                    placeholder={t('surcharge_placeholder', translations)}
                                     value={variation.surcharge}
                                     onChange={(e) =>
                                         updateVariation(
@@ -478,8 +493,7 @@ export default function ItemsEdit() {
                         ))}
                         {data.variations.length === 0 && (
                             <p className="text-sm text-muted-foreground">
-                                No variations added. Click "Add Variation" to
-                                add size or color options.
+                                {t('no_variations_added', translations)}
                             </p>
                         )}
                         {errors.variations && (
@@ -492,7 +506,7 @@ export default function ItemsEdit() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle>Price Tables</CardTitle>
+                        <CardTitle>{t('price_tables', translations)}</CardTitle>
                         <Button
                             type="button"
                             variant="outline"
@@ -500,7 +514,7 @@ export default function ItemsEdit() {
                             onClick={addPriceTable}
                         >
                             <Plus className="mr-2 h-4 w-4" />
-                            Add Price Table
+                            {t('add_price_table', translations)}
                         </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -520,7 +534,7 @@ export default function ItemsEdit() {
                                     }
                                 >
                                     <SelectTrigger className="flex-1">
-                                        <SelectValue placeholder="Select price table" />
+                                        <SelectValue placeholder={t('select_price_table_placeholder', translations)} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {priceTables.map((table) => (
@@ -537,7 +551,7 @@ export default function ItemsEdit() {
                                     type="number"
                                     step="0.01"
                                     min="0"
-                                    placeholder="Additional Cost"
+                                    placeholder={t('additional_cost_placeholder', translations)}
                                     value={pt.additional_cost}
                                     onChange={(e) =>
                                         updatePriceTable(
@@ -560,8 +574,7 @@ export default function ItemsEdit() {
                         ))}
                         {data.price_tables.length === 0 && (
                             <p className="text-sm text-muted-foreground">
-                                No price tables added. Click "Add Price Table"
-                                to add pricing for specific years.
+                                {t('no_price_tables_added', translations)}
                             </p>
                         )}
                         {errors.price_tables && (
@@ -574,13 +587,193 @@ export default function ItemsEdit() {
 
                 <div className="flex justify-end gap-2">
                     <Button type="button" variant="secondary" asChild>
-                        <Link href={admin.items.index().url}>Cancel</Link>
+                        <Link href={admin.items.index().url}>{t('cancel', translations)}</Link>
                     </Button>
                     <Button type="submit" disabled={processing}>
-                        {processing ? 'Saving...' : 'Save'}
+                        {processing ? t('saving', translations) : t('save', translations)}
                     </Button>
                 </div>
             </form>
+
+            {/* Image Modal */}
+            <Dialog
+                open={selectedImageIndex !== null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setSelectedImageIndex(null);
+                        setZoomLevel(1);
+                    }
+                }}
+            >
+                <DialogContent className="max-w-4xl w-full p-0 [&>button]:z-50">
+                    {selectedImageIndex !== null && item.images && item.images[selectedImageIndex] && (
+                        <div className="relative overflow-hidden">
+                            <div
+                                className="relative w-full h-[80vh] flex items-center justify-center bg-black/50 overflow-auto"
+                                onMouseDown={(e) => {
+                                    // Don't start dragging if clicking on a button, interactive element, or the close button area
+                                    const target = e.target as HTMLElement;
+                                    if (
+                                        target.closest('button') ||
+                                        target.closest('[role="button"]') ||
+                                        target.closest('[data-slot="dialog-close"]') ||
+                                        (e.clientX > window.innerWidth - 60 && e.clientY < 60) // Close button area
+                                    ) {
+                                        return;
+                                    }
+                                    if (zoomLevel > 1) {
+                                        setIsDragging(true);
+                                        setDragStart({
+                                            x: e.clientX - panPosition.x,
+                                            y: e.clientY - panPosition.y,
+                                        });
+                                    }
+                                }}
+                                onMouseMove={(e) => {
+                                    if (isDragging && zoomLevel > 1) {
+                                        setPanPosition({
+                                            x: e.clientX - dragStart.x,
+                                            y: e.clientY - dragStart.y,
+                                        });
+                                    }
+                                }}
+                                onMouseUp={() => setIsDragging(false)}
+                                onMouseLeave={() => setIsDragging(false)}
+                            >
+                                <div
+                                    className="flex items-center justify-center"
+                                    style={{
+                                        transform: `translate(${panPosition.x}px, ${panPosition.y}px)`,
+                                        transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                                    }}
+                                >
+                                    <img
+                                        src={item.images[selectedImageIndex].url}
+                                        alt="Item"
+                                        className="max-w-full max-h-full object-contain"
+                                        style={{
+                                            transform: `scale(${zoomLevel})`,
+                                            cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                                            userSelect: 'none',
+                                        }}
+                                        draggable={false}
+                                        onWheel={(e) => {
+                                            e.preventDefault();
+                                            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                                            const newZoom = Math.max(0.5, Math.min(5, zoomLevel + delta));
+                                            setZoomLevel(newZoom);
+                                            // Reset pan if zooming out to fit
+                                            if (newZoom <= 1) {
+                                                setPanPosition({ x: 0, y: 0 });
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Zoom Controls */}
+                            <div className="absolute top-4 right-16 flex gap-2 z-20">
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="bg-black/50 hover:bg-black/70 text-white"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const newZoom = Math.max(0.5, zoomLevel - 0.25);
+                                        setZoomLevel(newZoom);
+                                        if (newZoom <= 1) {
+                                            setPanPosition({ x: 0, y: 0 });
+                                        }
+                                    }}
+                                    disabled={zoomLevel <= 0.5}
+                                >
+                                    <ZoomOut className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="bg-black/50 hover:bg-black/70 text-white"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setZoomLevel((prev) => Math.min(5, prev + 0.25));
+                                    }}
+                                    disabled={zoomLevel >= 5}
+                                >
+                                    <ZoomIn className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="bg-black/50 hover:bg-black/70 text-white"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setZoomLevel(1);
+                                        setPanPosition({ x: 0, y: 0 });
+                                    }}
+                                    disabled={zoomLevel === 1}
+                                >
+                                    <RotateCcw className="h-4 w-4" />
+                                </Button>
+                            </div>
+
+                            {/* Navigation Arrows */}
+                            {item.images.length > 1 && (
+                                <>
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="icon"
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white z-10"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setZoomLevel(1);
+                                            setPanPosition({ x: 0, y: 0 });
+                                            setSelectedImageIndex(
+                                                selectedImageIndex > 0
+                                                    ? selectedImageIndex - 1
+                                                    : item.images.length - 1
+                                            );
+                                        }}
+                                    >
+                                        <ChevronLeft className="h-6 w-6" />
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="icon"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white z-10"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setZoomLevel(1);
+                                            setPanPosition({ x: 0, y: 0 });
+                                            setSelectedImageIndex(
+                                                selectedImageIndex < item.images.length - 1
+                                                    ? selectedImageIndex + 1
+                                                    : 0
+                                            );
+                                        }}
+                                    >
+                                        <ChevronRight className="h-6 w-6" />
+                                    </Button>
+                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm z-10">
+                                        {selectedImageIndex + 1} / {item.images.length}
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Zoom Level Indicator */}
+                            {zoomLevel !== 1 && (
+                                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm z-10">
+                                    {Math.round(zoomLevel * 100)}%
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }

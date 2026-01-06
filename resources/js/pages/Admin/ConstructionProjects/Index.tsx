@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type Customer = { id: number; name: string; email: string };
 
@@ -36,6 +37,7 @@ type PageProps = {
 };
 
 export default function ConstructionProjectsIndex() {
+    const translations = useTranslations();
     const { projects, filters, customers } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [customerId, setCustomerId] = useState(
@@ -45,11 +47,11 @@ export default function ConstructionProjectsIndex() {
     const breadcrumbs = useMemo(
         () => [
             {
-                title: 'Projects',
+                title: t('projects', translations),
                 href: admin.constructionProjects.index().url,
             },
         ],
-        [],
+        [translations],
     );
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -65,7 +67,7 @@ export default function ConstructionProjectsIndex() {
     };
 
     const handleDelete = (project: Project) => {
-        if (!confirm('Delete this project?')) {
+        if (!confirm(t('delete_this_project', translations))) {
             return;
         }
         router.delete(admin.constructionProjects.destroy(project.id).url);
@@ -75,21 +77,21 @@ export default function ConstructionProjectsIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Construction Projects</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('construction_projects', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Manage projects and price table assignments.
+                        {t('manage_projects_price_table', translations)}
                     </p>
                 </div>
                 <Button asChild size="lg">
                     <Link href={admin.constructionProjects.create().url}>
-                        + New Project
+                        + {t('new_project', translations)}
                     </Link>
                 </Button>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Search Projects</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('search_projects', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -97,7 +99,7 @@ export default function ConstructionProjectsIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search project or customer..."
+                            placeholder={t('search_project_or_customer', translations)}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="flex-1"
@@ -107,7 +109,7 @@ export default function ConstructionProjectsIndex() {
                             value={customerId}
                             onChange={(e) => setCustomerId(e.target.value)}
                         >
-                            <option value="">All customers</option>
+                            <option value="">{t('all_customers', translations)}</option>
                             {customers.map((customer) => (
                                 <option key={customer.id} value={customer.id}>
                                     {customer.name}
@@ -115,7 +117,7 @@ export default function ConstructionProjectsIndex() {
                             ))}
                         </select>
                         <div className="flex gap-2">
-                            <Button type="submit">Apply</Button>
+                            <Button type="submit">{t('apply', translations)}</Button>
                             <Button
                                 type="button"
                                 variant="secondary"
@@ -127,7 +129,7 @@ export default function ConstructionProjectsIndex() {
                                     );
                                 }}
                             >
-                                Reset
+                                {t('reset', translations)}
                             </Button>
                         </div>
                     </form>
@@ -136,19 +138,19 @@ export default function ConstructionProjectsIndex() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Project List</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('project_list', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left border-b border-border/50">
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Name</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Customer</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Price Table</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Rooms</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Bathrooms</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Configs</th>
-                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('name', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('customer', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('price_table_label', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('rooms', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('bathrooms', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('configs', translations)}</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">{t('actions', translations)}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -164,9 +166,9 @@ export default function ConstructionProjectsIndex() {
                                     </td>
                                     <td className="py-3 px-2">
                                         {project.manual_price_table
-                                            ? `Manual: ${project.manual_price_table.year}`
+                                            ? `${t('manual', translations)}: ${project.manual_price_table.year}`
                                             : project.price_table
-                                                ? `Auto: ${project.price_table.year}`
+                                                ? `${t('auto', translations)}: ${project.price_table.year}`
                                                 : '—'}
                                     </td>
                                     <td className="py-3 px-2">
@@ -196,7 +198,7 @@ export default function ConstructionProjectsIndex() {
                                                         .edit(project.id)
                                                         .url}
                                                 >
-                                                    Edit
+                                                    {t('edit', translations)}
                                                 </Link>
                                             </Button>
                                             <Button
@@ -206,7 +208,7 @@ export default function ConstructionProjectsIndex() {
                                                     handleDelete(project)
                                                 }
                                             >
-                                                Delete
+                                                {t('delete', translations)}
                                             </Button>
                                         </div>
                                     </td>
@@ -219,8 +221,8 @@ export default function ConstructionProjectsIndex() {
                                         colSpan={7}
                                     >
                                         <div className="flex flex-col items-center gap-2">
-                                            <p className="text-base">No projects found.</p>
-                                            <p className="text-sm opacity-70">Create your first project to get started.</p>
+                                            <p className="text-base">{t('no_projects_found', translations)}</p>
+                                            <p className="text-sm opacity-70">{t('create_first_project', translations)}</p>
                                         </div>
                                     </td>
                                 </tr>

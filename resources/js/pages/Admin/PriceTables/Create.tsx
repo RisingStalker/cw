@@ -5,12 +5,14 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type PageProps = {
     defaultYear: number;
 };
 
 export default function PriceTablesCreate() {
+    const translations = useTranslations();
     const { defaultYear } = usePage<PageProps>().props;
 
     const { data, setData, post, processing, errors } = useForm({
@@ -20,10 +22,10 @@ export default function PriceTablesCreate() {
 
     const breadcrumbs = [
         {
-            title: 'Price Tables',
+            title: t('price_tables', translations),
             href: admin.priceTables.index().url,
         },
-        { title: 'Create', href: admin.priceTables.create().url },
+        { title: t('create', translations), href: admin.priceTables.create().url },
     ];
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -35,25 +37,25 @@ export default function PriceTablesCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">New Price Table</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('new_price_table', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Create a new price table for a specific year.
+                        {t('create_new_price_table', translations)}
                     </p>
                 </div>
                 <Button variant="outline" asChild>
-                    <Link href={admin.priceTables.index().url}>Back</Link>
+                    <Link href={admin.priceTables.index().url}>{t('back', translations)}</Link>
                 </Button>
             </div>
 
             <Card className="mt-4 max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Price Table Details</CardTitle>
+                    <CardTitle>{t('price_table_details', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Year *
+                                {t('year', translations)} *
                             </label>
                             <Input
                                 type="number"
@@ -63,11 +65,10 @@ export default function PriceTablesCreate() {
                                 onChange={(e) =>
                                     setData('year', e.target.value)
                                 }
-                                placeholder="e.g., 2024"
+                                placeholder={t('year_placeholder', translations)}
                             />
                             <p className="text-xs text-muted-foreground">
-                                The year this price table applies to. Must be
-                                unique.
+                                {t('year_description', translations)}
                             </p>
                             {errors.year && (
                                 <p className="text-sm text-destructive">
@@ -88,11 +89,10 @@ export default function PriceTablesCreate() {
                                 htmlFor="is_active"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
-                                Active
+                                {t('active', translations)}
                             </label>
                             <p className="text-xs text-muted-foreground">
-                                Only active price tables can be assigned to new
-                                projects.
+                                {t('active_description', translations)}
                             </p>
                         </div>
                         {errors.is_active && (
@@ -108,11 +108,11 @@ export default function PriceTablesCreate() {
                                 asChild
                             >
                                 <Link href={admin.priceTables.index().url}>
-                                    Cancel
+                                    {t('cancel', translations)}
                                 </Link>
                             </Button>
                             <Button type="submit" disabled={processing}>
-                                {processing ? 'Saving...' : 'Save'}
+                                {processing ? t('saving', translations) : t('save', translations)}
                             </Button>
                         </div>
                     </form>

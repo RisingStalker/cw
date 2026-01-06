@@ -6,8 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 export default function AdminLogin() {
+    const translations = useTranslations();
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
@@ -21,15 +23,15 @@ export default function AdminLogin() {
 
     return (
         <AuthLayout
-            title="Admin Login"
-            description="Enter your credentials to access the admin panel"
+            title={t('admin_login', translations)}
+            description={t('enter_credentials_access_admin', translations)}
         >
-            <Head title="Admin Login" />
+            <Head title={t('admin_login', translations)} />
 
             <form onSubmit={submit} className="flex flex-col gap-6">
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label htmlFor="email">{t('email_address', translations)}</Label>
                         <Input
                             id="email"
                             type="email"
@@ -39,13 +41,13 @@ export default function AdminLogin() {
                             required
                             autoFocus
                             autoComplete="email"
-                            placeholder="email@example.com"
+                            placeholder={t('email_placeholder', translations)}
                         />
                         <InputError message={errors.email} />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">{t('password', translations)}</Label>
                         <Input
                             id="password"
                             type="password"
@@ -54,7 +56,7 @@ export default function AdminLogin() {
                             onChange={(e) => setData('password', e.target.value)}
                             required
                             autoComplete="current-password"
-                            placeholder="Password"
+                            placeholder={t('password_placeholder', translations)}
                         />
                         <InputError message={errors.password} />
                     </div>
@@ -65,7 +67,7 @@ export default function AdminLogin() {
                             checked={data.remember}
                             onCheckedChange={(checked) => setData('remember', checked === true)}
                         />
-                        <Label htmlFor="remember">Remember me</Label>
+                        <Label htmlFor="remember">{t('remember_me', translations)}</Label>
                     </div>
 
                     <Button
@@ -74,14 +76,14 @@ export default function AdminLogin() {
                         disabled={processing}
                     >
                         {processing && <Spinner />}
-                        Log in
+                        {t('log_in', translations)}
                     </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                    Don't have an account?{' '}
+                    {t('dont_have_account', translations)}{' '}
                     <Link href="/admin/register" className="text-primary hover:underline">
-                        Sign up
+                        {t('sign_up', translations)}
                     </Link>
                 </div>
             </form>

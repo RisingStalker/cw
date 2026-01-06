@@ -1,7 +1,9 @@
 import { usePage } from '@inertiajs/react';
 import { type SharedData } from '@/types';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 export default function AppLogo() {
+    const translations = useTranslations();
     const { name } = usePage<SharedData>().props;
     
     return (
@@ -9,7 +11,7 @@ export default function AppLogo() {
             <div className="flex aspect-square size-8 items-center justify-center rounded-md overflow-hidden">
                 <img 
                     src="/logo.png" 
-                    alt="Logo" 
+                    alt={t('logo', translations)} 
                     className="h-full w-full object-contain"
                 />
             </div>

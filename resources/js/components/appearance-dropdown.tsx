@@ -8,11 +8,13 @@ import {
 import { useAppearance } from '@/hooks/use-appearance';
 import { Monitor, Moon, Sun } from 'lucide-react';
 import { HTMLAttributes } from 'react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 export default function AppearanceToggleDropdown({
     className = '',
     ...props
 }: HTMLAttributes<HTMLDivElement>) {
+    const translations = useTranslations();
     const { appearance, updateAppearance } = useAppearance();
 
     const getCurrentIcon = () => {
@@ -34,10 +36,10 @@ export default function AppearanceToggleDropdown({
                         variant="ghost"
                         size="icon"
                         className="h-9 w-9 rounded-md hover:bg-accent/50 transition-all duration-200"
-                        title="Toggle theme"
+                        title={t('toggle_theme', translations)}
                     >
                         {getCurrentIcon()}
-                        <span className="sr-only">Toggle theme</span>
+                        <span className="sr-only">{t('toggle_theme', translations)}</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -47,7 +49,7 @@ export default function AppearanceToggleDropdown({
                     >
                         <span className="flex items-center gap-2">
                             <Sun className="h-4 w-4" />
-                            Light
+                            {t('light', translations)}
                         </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
@@ -56,7 +58,7 @@ export default function AppearanceToggleDropdown({
                     >
                         <span className="flex items-center gap-2">
                             <Moon className="h-4 w-4" />
-                            Dark
+                            {t('dark', translations)}
                         </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -65,7 +67,7 @@ export default function AppearanceToggleDropdown({
                     >
                         <span className="flex items-center gap-2">
                             <Monitor className="h-4 w-4" />
-                            System
+                            {t('system', translations)}
                         </span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>

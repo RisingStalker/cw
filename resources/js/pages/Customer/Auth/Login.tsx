@@ -7,8 +7,10 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { login, register } from '@/routes';
 import { Form, Head, Link, useForm } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 export default function CustomerLogin() {
+    const translations = useTranslations();
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
@@ -22,15 +24,15 @@ export default function CustomerLogin() {
 
     return (
         <AuthLayout
-            title="Customer Login"
-            description="Enter your email and password to access your projects"
+            title={t('customer_login', translations)}
+            description={t('enter_email_password_access_projects', translations)}
         >
-            <Head title="Customer Login" />
+            <Head title={t('customer_login', translations)} />
 
             <form onSubmit={submit} className="flex flex-col gap-6">
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label htmlFor="email">{t('email_address', translations)}</Label>
                         <Input
                             id="email"
                             type="email"
@@ -40,13 +42,13 @@ export default function CustomerLogin() {
                             required
                             autoFocus
                             autoComplete="email"
-                            placeholder="email@example.com"
+                            placeholder={t('email_placeholder', translations)}
                         />
                         <InputError message={errors.email} />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">{t('password', translations)}</Label>
                         <Input
                             id="password"
                             type="password"
@@ -55,7 +57,7 @@ export default function CustomerLogin() {
                             onChange={(e) => setData('password', e.target.value)}
                             required
                             autoComplete="current-password"
-                            placeholder="Password"
+                            placeholder={t('password_placeholder', translations)}
                         />
                         <InputError message={errors.password} />
                     </div>
@@ -66,7 +68,7 @@ export default function CustomerLogin() {
                             checked={data.remember}
                             onCheckedChange={(checked) => setData('remember', checked === true)}
                         />
-                        <Label htmlFor="remember">Remember me</Label>
+                        <Label htmlFor="remember">{t('remember_me', translations)}</Label>
                     </div>
 
                     <Button
@@ -75,14 +77,14 @@ export default function CustomerLogin() {
                         disabled={processing}
                     >
                         {processing && <Spinner />}
-                        Log in
+                        {t('log_in', translations)}
                     </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                    Don't have an account?{' '}
+                    {t('dont_have_account', translations)}{' '}
                     <Link href={register().url} className="text-primary hover:underline">
-                        Sign up
+                        {t('sign_up', translations)}
                     </Link>
                 </div>
             </form>

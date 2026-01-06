@@ -3,18 +3,21 @@ import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: admin.dashboard().url,
-    },
-];
+import { useTranslations, t } from '@/hooks/use-translations';
 
 export default function Dashboard() {
+    const translations = useTranslations();
+    
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('dashboard', translations),
+            href: admin.dashboard().url,
+        },
+    ];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title={t('dashboard', translations)} />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl">
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">

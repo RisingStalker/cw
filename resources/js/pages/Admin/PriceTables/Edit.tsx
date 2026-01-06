@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type PriceTable = {
     id: number;
@@ -17,6 +18,7 @@ type PageProps = {
 };
 
 export default function PriceTablesEdit() {
+    const translations = useTranslations();
     const { priceTable } = usePage<PageProps>().props;
 
     const { data, setData, put, processing, errors } = useForm({
@@ -26,11 +28,11 @@ export default function PriceTablesEdit() {
 
     const breadcrumbs = [
         {
-            title: 'Price Tables',
+            title: t('price_tables', translations),
             href: admin.priceTables.index().url,
         },
         {
-            title: 'Edit',
+            title: t('edit', translations),
             href: admin.priceTables.edit(priceTable.id).url,
         },
     ];
@@ -44,25 +46,25 @@ export default function PriceTablesEdit() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Edit Price Table</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('edit_price_table', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Update price table details.
+                        {t('update_price_table_details', translations)}
                     </p>
                 </div>
                 <Button variant="outline" asChild>
-                    <Link href={admin.priceTables.index().url}>Back</Link>
+                    <Link href={admin.priceTables.index().url}>{t('back', translations)}</Link>
                 </Button>
             </div>
 
             <Card className="mt-4 max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Price Table Details</CardTitle>
+                    <CardTitle>{t('price_table_details', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Year *
+                                {t('year', translations)} *
                             </label>
                             <Input
                                 type="number"
@@ -74,8 +76,7 @@ export default function PriceTablesEdit() {
                                 }
                             />
                             <p className="text-xs text-muted-foreground">
-                                The year this price table applies to. Must be
-                                unique.
+                                {t('year_description', translations)}
                             </p>
                             {errors.year && (
                                 <p className="text-sm text-destructive">
@@ -96,11 +97,10 @@ export default function PriceTablesEdit() {
                                 htmlFor="is_active"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
-                                Active
+                                {t('active', translations)}
                             </label>
                             <p className="text-xs text-muted-foreground">
-                                Only active price tables can be assigned to new
-                                projects.
+                                {t('active_description', translations)}
                             </p>
                         </div>
                         {errors.is_active && (
@@ -116,11 +116,11 @@ export default function PriceTablesEdit() {
                                 asChild
                             >
                                 <Link href={admin.priceTables.index().url}>
-                                    Cancel
+                                    {t('cancel', translations)}
                                 </Link>
                             </Button>
                             <Button type="submit" disabled={processing}>
-                                {processing ? 'Saving...' : 'Save'}
+                                {processing ? t('saving', translations) : t('save', translations)}
                             </Button>
                         </div>
                     </form>

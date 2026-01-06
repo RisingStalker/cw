@@ -2,6 +2,7 @@ import FlashToast from '@/components/flash-toast';
 import { CustomerHeader } from '@/components/customer-header';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 interface CustomerLayoutProps {
     children: React.ReactNode;
@@ -10,6 +11,7 @@ interface CustomerLayoutProps {
 export default function CustomerLayout({
     children,
 }: CustomerLayoutProps) {
+    const translations = useTranslations();
     return (
         <div className="flex min-h-screen flex-col">
             <FlashToast />
@@ -23,14 +25,14 @@ export default function CustomerLayout({
                 <div className="container mx-auto px-4 md:px-6">
                     <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                         <p className="text-sm text-muted-foreground">
-                            © {new Date().getFullYear()} {import.meta.env.VITE_APP_NAME || 'Home Equipment'}. All rights reserved.
+                            © {new Date().getFullYear()} {import.meta.env.VITE_APP_NAME || 'Home Equipment'}. {t('all_rights_reserved', translations)}
                         </p>
                         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                             <Link href="/" className="hover:text-foreground">
-                                Privacy Policy
+                                {t('privacy_policy', translations)}
                             </Link>
                             <Link href="/" className="hover:text-foreground">
-                                Terms of Service
+                                {t('terms_of_service', translations)}
                             </Link>
                         </div>
                     </div>

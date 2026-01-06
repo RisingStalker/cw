@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations, t } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, usePage } from '@inertiajs/react';
@@ -42,6 +43,7 @@ type PageProps = {
 };
 
 export default function ItemsIndex() {
+    const translations = useTranslations();
     const { items, categories, filters } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [categoryId, setCategoryId] = useState(
@@ -51,11 +53,11 @@ export default function ItemsIndex() {
     const breadcrumbs = useMemo(
         () => [
             {
-                title: 'Items',
+                title: t('items', translations),
                 href: admin.items.index().url,
             },
         ],
-        [],
+        [translations],
     );
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -71,7 +73,7 @@ export default function ItemsIndex() {
     };
 
     const handleDelete = (item: Item) => {
-        if (!confirm('Delete this item?')) {
+        if (!confirm(t('delete_item', translations))) {
             return;
         }
 
@@ -82,19 +84,19 @@ export default function ItemsIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Items</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('items', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Manage items, images, and variations.
+                        {t('manage_items_images_variations', translations)}
                     </p>
                 </div>
                 <Button asChild size="lg">
-                    <Link href={admin.items.create().url}>+ New Item</Link>
+                    <Link href={admin.items.create().url}>+ {t('new_item', translations)}</Link>
                 </Button>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Search Items</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('search_items', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -102,7 +104,7 @@ export default function ItemsIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search title or description..."
+                            placeholder={t('search_title_description', translations)}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="flex-1"
@@ -112,7 +114,7 @@ export default function ItemsIndex() {
                             value={categoryId}
                             onChange={(e) => setCategoryId(e.target.value)}
                         >
-                            <option value="">All categories</option>
+                            <option value="">{t('all_categories', translations)}</option>
                             {categories.map((category) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
@@ -120,7 +122,7 @@ export default function ItemsIndex() {
                             ))}
                         </select>
                         <div className="flex gap-2">
-                            <Button type="submit">Apply</Button>
+                            <Button type="submit">{t('apply', translations)}</Button>
                             <Button
                                 type="button"
                                 variant="secondary"
@@ -130,7 +132,7 @@ export default function ItemsIndex() {
                                     router.get(admin.items.index().url);
                                 }}
                             >
-                                Reset
+                                {t('reset', translations)}
                             </Button>
                         </div>
                     </form>
@@ -139,19 +141,19 @@ export default function ItemsIndex() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Item List</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('item_list', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left border-b border-border/50">
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Title</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Category</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Cost</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Flags</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Images</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Variations</th>
-                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('title', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('category', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('cost', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('flags', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('images', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('variations', translations)}</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">{t('actions', translations)}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -185,22 +187,22 @@ export default function ItemsIndex() {
                                         <div className="flex flex-wrap gap-1">
                                             {item.is_standard && (
                                                 <span className="rounded bg-blue-100 px-1.5 py-0.5 text-xs text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                                    Standard
+                                                    {t('standard', translations)}
                                                 </span>
                                             )}
                                             {item.requires_quantity && (
                                                 <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                    Qty
+                                                    {t('qty', translations)}
                                                 </span>
                                             )}
                                             {item.consultation_required && (
                                                 <span className="rounded bg-orange-100 px-1.5 py-0.5 text-xs text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                                                    Consult
+                                                    {t('consult', translations)}
                                                 </span>
                                             )}
                                             {item.hidden_until && (
                                                 <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-800 dark:bg-gray-900 dark:text-gray-200">
-                                                    Hidden
+                                                    {t('hidden', translations)}
                                                 </span>
                                             )}
                                         </div>
@@ -227,7 +229,7 @@ export default function ItemsIndex() {
                                                         .edit(item.id)
                                                         .url}
                                                 >
-                                                    Edit
+                                                    {t('edit', translations)}
                                                 </Link>
                                             </Button>
                                             <Button
@@ -237,7 +239,7 @@ export default function ItemsIndex() {
                                                     handleDelete(item)
                                                 }
                                             >
-                                                Delete
+                                                {t('delete', translations)}
                                             </Button>
                                         </div>
                                     </td>
@@ -250,8 +252,8 @@ export default function ItemsIndex() {
                                         colSpan={7}
                                     >
                                         <div className="flex flex-col items-center gap-2">
-                                            <p className="text-base">No items found.</p>
-                                            <p className="text-sm opacity-70">Create your first item to get started.</p>
+                                            <p className="text-base">{t('no_items_found', translations)}</p>
+                                            <p className="text-sm opacity-70">{t('create_first_item', translations)}</p>
                                         </div>
                                     </td>
                                 </tr>

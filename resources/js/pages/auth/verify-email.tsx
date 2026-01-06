@@ -6,19 +6,20 @@ import AuthLayout from '@/layouts/auth-layout';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 import { Form, Head } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 export default function VerifyEmail({ status }: { status?: string }) {
+    const translations = useTranslations();
     return (
         <AuthLayout
-            title="Verify email"
-            description="Please verify your email address by clicking on the link we just emailed to you."
+            title={t('verify_email', translations)}
+            description={t('verify_email_description', translations)}
         >
-            <Head title="Email verification" />
+            <Head title={t('email_verification', translations)} />
 
             {status === 'verification-link-sent' && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
+                    {t('verification_link_sent', translations)}
                 </div>
             )}
 
@@ -27,14 +28,14 @@ export default function VerifyEmail({ status }: { status?: string }) {
                     <>
                         <Button disabled={processing} variant="secondary">
                             {processing && <Spinner />}
-                            Resend verification email
+                            {t('resend_verification_email', translations)}
                         </Button>
 
                         <TextLink
                             href={logout()}
                             className="mx-auto block text-sm"
                         >
-                            Log out
+                            {t('log_out', translations)}
                         </TextLink>
                     </>
                 )}

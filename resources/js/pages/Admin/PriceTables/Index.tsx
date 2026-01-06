@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type PriceTable = {
     id: number;
@@ -23,6 +24,7 @@ type PageProps = {
 };
 
 export default function PriceTablesIndex() {
+    const translations = useTranslations();
     const { priceTables, filters } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters?.search ?? '');
     const [status, setStatus] = useState(filters?.status ?? '');
@@ -30,11 +32,11 @@ export default function PriceTablesIndex() {
     const breadcrumbs = useMemo(
         () => [
             {
-                title: 'Price Tables',
+                title: t('price_tables', translations),
                 href: admin.priceTables.index().url,
             },
         ],
-        [],
+        [translations],
     );
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -50,7 +52,7 @@ export default function PriceTablesIndex() {
     };
 
     const handleDelete = (priceTable: PriceTable) => {
-        if (!confirm('Delete this price table?')) {
+        if (!confirm(t('delete_this_price_table', translations))) {
             return;
         }
 
@@ -75,22 +77,21 @@ export default function PriceTablesIndex() {
             <FlashToast />
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Price Tables</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('price_tables', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Manage price tables by year. Projects use price tables
-                        to determine item pricing.
+                        {t('manage_price_tables_by_year', translations)}
                     </p>
                 </div>
                 <Button asChild size="lg">
                     <Link href={admin.priceTables.create().url}>
-                        + New Price Table
+                        + {t('new_price_table', translations)}
                     </Link>
                 </Button>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Search Price Tables</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('search_price_tables', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -98,7 +99,7 @@ export default function PriceTablesIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search by year..."
+                            placeholder={t('search_by_year', translations)}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="flex-1"
@@ -108,12 +109,12 @@ export default function PriceTablesIndex() {
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
                         >
-                            <option value="">All statuses</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="">{t('all_statuses', translations)}</option>
+                            <option value="active">{t('active', translations)}</option>
+                            <option value="inactive">{t('inactive', translations)}</option>
                         </select>
                         <div className="flex gap-2">
-                            <Button type="submit">Apply</Button>
+                            <Button type="submit">{t('apply', translations)}</Button>
                             <Button
                                 type="button"
                                 variant="secondary"
@@ -123,7 +124,7 @@ export default function PriceTablesIndex() {
                                     router.get(admin.priceTables.index().url);
                                 }}
                             >
-                                Reset
+                                {t('reset', translations)}
                             </Button>
                         </div>
                     </form>
@@ -132,16 +133,16 @@ export default function PriceTablesIndex() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Price Table List</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('price_table_list', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left border-b border-border/50">
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Year</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Status</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Projects</th>
-                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('year', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('status', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('projects', translations)}</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">{t('actions', translations)}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -157,11 +158,11 @@ export default function PriceTablesIndex() {
                                     <td className="py-3 px-2">
                                         {priceTable.is_active ? (
                                             <span className="rounded bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                Active
+                                                {t('active', translations)}
                                             </span>
                                         ) : (
                                             <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-800 dark:bg-gray-900 dark:text-gray-200">
-                                                Inactive
+                                                {t('inactive', translations)}
                                             </span>
                                         )}
                                     </td>
@@ -182,7 +183,7 @@ export default function PriceTablesIndex() {
                                                         .edit(priceTable.id)
                                                         .url}
                                                 >
-                                                    Edit
+                                                    {t('edit', translations)}
                                                 </Link>
                                             </Button>
                                             <Button
@@ -192,7 +193,7 @@ export default function PriceTablesIndex() {
                                                     handleDelete(priceTable)
                                                 }
                                             >
-                                                Delete
+                                                {t('delete', translations)}
                                             </Button>
                                         </div>
                                     </td>
@@ -207,11 +208,11 @@ export default function PriceTablesIndex() {
                                         <div className="flex flex-col items-center gap-2">
                                             <p className="text-base">
                                                 {search || status
-                                                    ? 'No price tables found matching your filters.'
-                                                    : 'No price tables found.'}
+                                                    ? t('no_price_tables_found_matching', translations)
+                                                    : t('no_price_tables_found', translations)}
                                             </p>
                                             {!search && !status && (
-                                                <p className="text-sm opacity-70">Create your first price table to get started.</p>
+                                                <p className="text-sm opacity-70">{t('create_first_price_table', translations)}</p>
                                             )}
                                         </div>
                                     </td>

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type Category = {
     id: number;
@@ -16,6 +17,7 @@ type PageProps = {
 };
 
 export default function CategoriesEdit() {
+    const translations = useTranslations();
     const { category } = usePage<PageProps>().props;
 
     const { data, setData, put, processing, errors } = useForm({
@@ -24,8 +26,8 @@ export default function CategoriesEdit() {
     });
 
     const breadcrumbs = [
-        { title: 'Categories', href: admin.categories.index().url },
-        { title: 'Edit', href: admin.categories.edit(category.id).url },
+        { title: t('categories', translations), href: admin.categories.index().url },
+        { title: t('edit', translations), href: admin.categories.edit(category.id).url },
     ];
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -37,25 +39,25 @@ export default function CategoriesEdit() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold">Edit Category</h1>
+                    <h1 className="text-xl font-semibold">{t('edit_category', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Update category details.
+                        {t('update_category_details', translations)}
                     </p>
                 </div>
                 <Button variant="outline" asChild>
-                    <Link href={admin.categories.index().url}>Back</Link>
+                    <Link href={admin.categories.index().url}>{t('back', translations)}</Link>
                 </Button>
             </div>
 
             <Card className="mt-4 max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Category Details</CardTitle>
+                    <CardTitle>{t('category_details', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <label className="text-sm font-medium">
-                                Category Name *
+                                {t('category_name', translations)} *
                             </label>
                             <Input
                                 value={data.name}
@@ -71,7 +73,7 @@ export default function CategoriesEdit() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Order</label>
+                            <label className="text-sm font-medium">{t('order', translations)}</label>
                             <Input
                                 type="number"
                                 min="1"
@@ -84,8 +86,7 @@ export default function CategoriesEdit() {
                                 }
                             />
                             <p className="text-xs text-muted-foreground">
-                                Lower numbers appear first. You can reorder
-                                categories later.
+                                {t('order_description', translations)}
                             </p>
                             {errors.order && (
                                 <p className="text-sm text-destructive">
@@ -101,11 +102,11 @@ export default function CategoriesEdit() {
                                 asChild
                             >
                                 <Link href={admin.categories.index().url}>
-                                    Cancel
+                                    {t('cancel', translations)}
                                 </Link>
                             </Button>
                             <Button type="submit" disabled={processing}>
-                                {processing ? 'Saving...' : 'Save'}
+                                {processing ? t('saving', translations) : t('save', translations)}
                             </Button>
                         </div>
                     </form>

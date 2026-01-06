@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type Category = {
     id: number;
@@ -21,17 +22,18 @@ type PageProps = {
 };
 
 export default function CategoriesIndex() {
+    const translations = useTranslations();
     const { categories, filters } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters?.search ?? '');
 
     const breadcrumbs = useMemo(
         () => [
             {
-                title: 'Categories',
+                title: t('categories', translations),
                 href: admin.categories.index().url,
             },
         ],
-        [],
+        [translations],
     );
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -44,7 +46,7 @@ export default function CategoriesIndex() {
     };
 
     const handleDelete = (category: Category) => {
-        if (!confirm('Delete this category?')) {
+        if (!confirm(t('confirm_delete_category', translations))) {
             return;
         }
 
@@ -64,21 +66,21 @@ export default function CategoriesIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Categories</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('categories', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Manage categories and their display order.
+                        {t('manage_categories_display_order', translations)}
                     </p>
                 </div>
                 <Button asChild size="lg">
                     <Link href={admin.categories.create().url}>
-                        + New Category
+                        + {t('new_category', translations)}
                     </Link>
                 </Button>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Search Categories</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('search_categories', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form
@@ -86,13 +88,13 @@ export default function CategoriesIndex() {
                         onSubmit={handleSearch}
                     >
                         <Input
-                            placeholder="Search category name..."
+                            placeholder={t('search_category_name', translations)}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="flex-1"
                         />
                         <div className="flex gap-2">
-                            <Button type="submit">Search</Button>
+                            <Button type="submit">{t('search', translations)}</Button>
                             <Button
                                 type="button"
                                 variant="secondary"
@@ -101,7 +103,7 @@ export default function CategoriesIndex() {
                                     router.get(admin.categories.index().url);
                                 }}
                             >
-                                Reset
+                                {t('reset', translations)}
                             </Button>
                         </div>
                     </form>
@@ -110,16 +112,16 @@ export default function CategoriesIndex() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Category List</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{t('category_list', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left border-b border-border/50">
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Name</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Order</th>
-                                <th className="py-3 px-2 font-semibold text-foreground/80">Items</th>
-                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">Actions</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('name', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('order', translations)}</th>
+                                <th className="py-3 px-2 font-semibold text-foreground/80">{t('items', translations)}</th>
+                                <th className="py-3 px-2 text-right font-semibold text-foreground/80">{t('actions', translations)}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,7 +154,7 @@ export default function CategoriesIndex() {
                                                         .edit(category.id)
                                                         .url}
                                                 >
-                                                    Edit
+                                                    {t('edit', translations)}
                                                 </Link>
                                             </Button>
                                             <Button
@@ -162,7 +164,7 @@ export default function CategoriesIndex() {
                                                     handleDelete(category)
                                                 }
                                             >
-                                                Delete
+                                                {t('delete', translations)}
                                             </Button>
                                         </div>
                                     </td>
@@ -177,11 +179,11 @@ export default function CategoriesIndex() {
                                         <div className="flex flex-col items-center gap-2">
                                             <p className="text-base">
                                                 {search
-                                                    ? 'No categories found matching your search.'
-                                                    : 'No categories found.'}
+                                                    ? t('no_categories_found_matching', translations)
+                                                    : t('no_categories_found', translations)}
                                             </p>
                                             {!search && (
-                                                <p className="text-sm opacity-70">Create your first category to get started.</p>
+                                                <p className="text-sm opacity-70">{t('create_first_category', translations)}</p>
                                             )}
                                         </div>
                                     </td>

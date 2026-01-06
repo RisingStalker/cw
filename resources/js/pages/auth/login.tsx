@@ -9,6 +9,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register, login } from '@/routes';
 import { email } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 interface LoginProps {
     status?: string;
@@ -21,12 +22,13 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: LoginProps) {
+    const translations = useTranslations();
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
+            title={t('log_in_to_your_account', translations)}
+            description={t('enter_email_password_to_log_in', translations)}
         >
-            <Head title="Log in" />
+            <Head title={t('log_in', translations)} />
 
             <Form
                 action={login().url}
@@ -38,7 +40,7 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">{t('email_address', translations)}</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -47,21 +49,21 @@ export default function Login({
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder={t('email_placeholder', translations)}
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">{t('password', translations)}</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={email.url()}
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
-                                            Forgot password?
+                                            {t('forgot_password_question', translations)}
                                         </TextLink>
                                     )}
                                 </div>
@@ -72,7 +74,7 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder={t('password_placeholder', translations)}
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -83,7 +85,7 @@ export default function Login({
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember">{t('remember_me', translations)}</Label>
                             </div>
 
                             <Button
@@ -94,15 +96,15 @@ export default function Login({
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Log in
+                                {t('log_in', translations)}
                             </Button>
                         </div>
 
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
+                                {t('dont_have_account', translations)}{' '}
                                 <TextLink href={register()} tabIndex={5}>
-                                    Sign up
+                                    {t('sign_up', translations)}
                                 </TextLink>
                             </div>
                         )}

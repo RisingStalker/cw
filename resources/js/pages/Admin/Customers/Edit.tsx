@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { useTranslations, t } from '@/hooks/use-translations';
 
 type Customer = {
     id: number;
@@ -16,6 +17,7 @@ type PageProps = {
 };
 
 export default function CustomersEdit() {
+    const translations = useTranslations();
     const { customer } = usePage<PageProps>().props;
     const { data, setData, put, processing, errors } = useForm({
         name: customer.name ?? '',
@@ -24,7 +26,7 @@ export default function CustomersEdit() {
 
     const breadcrumbs = [
         {
-            title: 'Customers',
+            title: t('customers', translations),
             href: admin.customers.index().url,
         },
         {
@@ -42,24 +44,24 @@ export default function CustomersEdit() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Edit Customer</h1>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">{t('edit_customer', translations)}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Update customer details.
+                        {t('update_customer_details', translations)}
                     </p>
                 </div>
                 <Button variant="outline" asChild>
-                    <Link href={admin.customers.index().url}>Back</Link>
+                    <Link href={admin.customers.index().url}>{t('back', translations)}</Link>
                 </Button>
             </div>
 
             <Card className="mt-4 max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Customer Details</CardTitle>
+                    <CardTitle>{t('customer_details', translations)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Name</label>
+                            <label className="text-sm font-medium">{t('name', translations)}</label>
                             <Input
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
@@ -72,7 +74,7 @@ export default function CustomersEdit() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Email</label>
+                            <label className="text-sm font-medium">{t('email', translations)}</label>
                             <Input
                                 type="email"
                                 value={data.email}
@@ -94,11 +96,11 @@ export default function CustomersEdit() {
                                 asChild
                             >
                                 <Link href={admin.customers.index().url}>
-                                    Cancel
+                                    {t('cancel', translations)}
                                 </Link>
                             </Button>
                             <Button type="submit" disabled={processing}>
-                                {processing ? 'Saving...' : 'Save'}
+                                {processing ? t('saving', translations) : t('save', translations)}
                             </Button>
                         </div>
                     </form>

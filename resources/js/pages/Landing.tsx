@@ -1,4 +1,6 @@
 import AppearanceToggleDropdown from '@/components/appearance-dropdown';
+import LanguageDropdown from '@/components/language-dropdown';
+import { useTranslations, t } from '@/hooks/use-translations';
 import { ArrowRight, CheckCircle2, Home, Wrench, Building2, ChevronLeft, ChevronRight, BarChart3, Users, Shield, Zap } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
@@ -25,6 +27,7 @@ const cardImages = [
 ];
 
 export default function Landing() {
+    const translations = useTranslations();
     const [currentSlide, setCurrentSlide] = useState(0);
 
     useEffect(() => {
@@ -52,21 +55,24 @@ export default function Landing() {
             <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
                 <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
                     <Home className="h-6 w-6 text-primary" />
-                    <span>Home Equipment</span>
+                    <span>{t('app_name', translations)}</span>
                 </Link>
                 <div className="flex items-center gap-3">
-                    <AppearanceToggleDropdown className="hidden sm:block" />
+                    <div className="hidden sm:flex items-center gap-2">
+                        <AppearanceToggleDropdown />
+                        <LanguageDropdown />
+                    </div>
                     <Link
                         href="/login"
                         className="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:border-primary hover:text-primary"
                     >
-                        Login
+                        {t('login', translations)}
                     </Link>
                     <Link
                         href="/register"
                         className="rounded-full bg-gradient-to-r from-primary via-primary/90 to-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:brightness-110"
                     >
-                        Get Started
+                        {t('create_account', translations)}
                     </Link>
                 </div>
             </header>
@@ -86,7 +92,7 @@ export default function Landing() {
                                 >
                                     <img
                                         src={image}
-                                        alt={`Home equipment and construction project ${index + 1}`}
+                                        alt={`${t('home_equipment_management', translations)} ${index + 1}`}
                                         className="h-full w-full object-cover"
                                     />
                                 </div>
@@ -103,43 +109,41 @@ export default function Landing() {
                             {/* First Column */}
                             <div className="space-y-6">
                                 <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200 backdrop-blur-sm">
-                                    Home Equipment Management · Project Tracking
+                                    {t('home_equipment_management', translations)} · {t('project_tracking', translations)}
                                 </p>
                                 <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-                                    Manage your home equipment projects with
+                                    {t('manage_home_equipment_projects', translations)}{' '}
                                     <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                                        {' '}
-                                        precision and ease
+                                        {t('precision_and_ease', translations)}
                                     </span>
                                     .
                                 </h1>
                                 <p className="max-w-2xl text-lg text-white/90">
-                                    Track construction projects, manage equipment categories, view detailed pricing,
-                                    and organize your home equipment needs—all in one comprehensive platform.
+                                    {t('track_construction_projects', translations)}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-4">
                                     <Link
                                         href="/login"
                                         className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 px-6 py-3 text-base font-semibold text-white shadow-xl shadow-cyan-500/30 transition hover:brightness-110"
                                     >
-                                        Login to your portal
+                                        {t('login_to_portal', translations)}
                                         <ArrowRight className="h-5 w-5" />
                                     </Link>
                                     <Link
                                         href="/register"
                                         className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition hover:border-white hover:bg-white/20"
                                     >
-                                        Create account
+                                        {t('create_account', translations)}
                                     </Link>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-md">
                                     {[
-                                        { label: 'Active Projects', value: 'Unlimited' },
-                                        { label: 'Equipment Categories', value: 'All Types' },
-                                        { label: 'Price Tables', value: 'Customizable' },
-                                        { label: 'Project Tracking', value: 'Real-time' },
-                                    ].map((stat) => (
-                                        <div key={stat.label}>
+                                        { label: t('active_projects', translations), value: t('unlimited', translations) },
+                                        { label: t('equipment_categories', translations), value: t('all_types', translations) },
+                                        { label: t('price_tables_customizable', translations), value: t('customizable', translations) },
+                                        { label: t('project_tracking_realtime', translations), value: t('realtime', translations) },
+                                    ].map((stat, index) => (
+                                        <div key={index}>
                                             <p className="text-sm text-white/70">{stat.label}</p>
                                             <p className="text-xl font-semibold text-white">{stat.value}</p>
                                         </div>
@@ -151,29 +155,29 @@ export default function Landing() {
                             <div className="space-y-6">
                                 <div className="rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-md">
                                     <h2 className="mb-4 text-2xl font-bold text-white">
-                                        Why Choose Our Platform?
+                                        {t('why_choose_platform', translations)}
                                     </h2>
                                     <div className="space-y-4">
                                         {[
                                             {
                                                 icon: BarChart3,
-                                                title: 'Advanced Analytics',
-                                                description: 'Track project progress with real-time analytics and detailed reporting.',
+                                                title: t('advanced_analytics', translations),
+                                                description: t('advanced_analytics_desc', translations),
                                             },
                                             {
                                                 icon: Users,
-                                                title: 'Team Collaboration',
-                                                description: 'Work seamlessly with your team and manage multiple projects efficiently.',
+                                                title: t('team_collaboration', translations),
+                                                description: t('team_collaboration_desc', translations),
                                             },
                                             {
                                                 icon: Shield,
-                                                title: 'Secure & Reliable',
-                                                description: 'Your data is protected with enterprise-grade security measures.',
+                                                title: t('secure_reliable', translations),
+                                                description: t('secure_reliable_desc', translations),
                                             },
                                             {
                                                 icon: Zap,
-                                                title: 'Fast & Efficient',
-                                                description: 'Streamlined workflows to save time and increase productivity.',
+                                                title: t('fast_efficient', translations),
+                                                description: t('fast_efficient_desc', translations),
                                             },
                                         ].map((feature, index) => (
                                             <div key={index} className="flex gap-4">
@@ -194,22 +198,22 @@ export default function Landing() {
                                 </div>
 
                                 <div className="rounded-2xl border border-white/20 bg-gradient-to-br from-cyan-500/20 via-blue-500/20 to-indigo-500/20 p-6 backdrop-blur-md">
-                                    <h3 className="mb-3 text-xl font-bold text-white">Get Started Today</h3>
+                                    <h3 className="mb-3 text-xl font-bold text-white">{t('get_started_today', translations)}</h3>
                                     <p className="mb-4 text-sm text-white/90">
-                                        Join thousands of customers managing their home equipment projects with ease.
+                                        {t('join_thousands', translations)}
                                     </p>
                                     <div className="flex flex-col gap-2">
                                         <div className="flex items-center gap-2 text-sm text-white/90">
                                             <CheckCircle2 className="h-4 w-4 text-cyan-300" />
-                                            <span>Free account setup</span>
+                                            <span>{t('free_account_setup', translations)}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-white/90">
                                             <CheckCircle2 className="h-4 w-4 text-cyan-300" />
-                                            <span>No credit card required</span>
+                                            <span>{t('no_credit_card', translations)}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-white/90">
                                             <CheckCircle2 className="h-4 w-4 text-cyan-300" />
-                                            <span>24/7 customer support</span>
+                                            <span>{t('customer_support', translations)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -257,44 +261,43 @@ export default function Landing() {
                 <section className="space-y-10">
                     <div className="text-center space-y-3">
                         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">
-                            Project Management
+                            {t('project_management', translations)}
                         </p>
                         <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
-                            Organize your home equipment projects by room and category
+                            {t('organize_home_equipment_projects', translations)}
                         </h2>
                         <p className="text-muted-foreground max-w-3xl mx-auto">
-                            Track construction projects for different rooms, manage equipment categories,
-                            and access detailed pricing information for all your home equipment needs.
+                            {t('track_construction_projects_description', translations)}
                         </p>
                     </div>
 
                     <div className="grid gap-8 lg:grid-cols-3">
                         {[
                             {
-                                title: 'Construction Projects',
-                                subtitle: 'Track and manage all your home construction projects',
+                                title: t('construction_projects_title', translations),
+                                subtitle: t('construction_projects_subtitle', translations),
                                 bullets: [
-                                    'Organize projects by room, floor, or building',
-                                    'View project details and equipment requirements',
-                                    'Monitor progress and track project status',
+                                    t('organize_projects_by_room', translations),
+                                    t('view_project_details', translations),
+                                    t('monitor_progress', translations),
                                 ],
                             },
                             {
-                                title: 'Equipment Categories',
-                                subtitle: 'Browse and manage home equipment by category',
+                                title: t('equipment_categories_title', translations),
+                                subtitle: t('equipment_categories_subtitle', translations),
                                 bullets: [
-                                    'Kitchen equipment and appliances',
-                                    'Bathroom fixtures and fittings',
-                                    'Living room and bedroom furniture',
+                                    t('kitchen_equipment', translations),
+                                    t('bathroom_fixtures', translations),
+                                    t('living_room_furniture', translations),
                                 ],
                             },
                             {
-                                title: 'Price Tables',
-                                subtitle: 'Access detailed pricing for all equipment items',
+                                title: t('price_tables_title', translations),
+                                subtitle: t('price_tables_subtitle', translations),
                                 bullets: [
-                                    'View item prices across different price tables',
-                                    'Compare costs and additional charges',
-                                    'Make informed purchasing decisions',
+                                    t('view_item_prices', translations),
+                                    t('compare_costs', translations),
+                                    t('informed_purchasing', translations),
                                 ],
                             },
                         ].map((card, idx) => (
@@ -339,14 +342,13 @@ export default function Landing() {
                     <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                         <div className="space-y-3">
                             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">
-                                Get Started Today
+                                {t('get_started_today', translations)}
                             </p>
                             <h3 className="text-3xl font-bold text-foreground">
-                                Start managing your home equipment projects now.
+                                {t('start_managing_projects', translations)}
                             </h3>
                             <p className="text-muted-foreground">
-                                Login to access your projects or create a new account to begin tracking
-                                your home equipment and construction projects.
+                                {t('login_access_projects', translations)}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-3">
@@ -354,14 +356,14 @@ export default function Landing() {
                                 href="/login"
                                 className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900 shadow-lg shadow-black/10 transition hover:shadow-xl"
                             >
-                                Login
+                                {t('login', translations)}
                                 <ArrowRight className="h-5 w-5" />
                             </Link>
                             <Link
                                 href="/register"
                                 className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-base font-semibold text-white transition hover:border-white hover:bg-white/10"
                             >
-                                Create account
+                                {t('create_account', translations)}
                             </Link>
                         </div>
                     </div>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ItemImage extends Model
 {
@@ -16,6 +17,8 @@ class ItemImage extends Model
         'order',
     ];
 
+    protected $appends = ['url'];
+
     protected function casts(): array
     {
         return [
@@ -26,5 +29,10 @@ class ItemImage extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return Storage::disk('public')->url($this->path);
     }
 }
