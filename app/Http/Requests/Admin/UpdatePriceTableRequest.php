@@ -21,8 +21,11 @@ class UpdatePriceTableRequest extends FormRequest
      */
     public function rules(): array
     {
+        $priceTable = $this->route('price_table');
+        $priceTableId = $priceTable instanceof \App\Models\PriceTable ? $priceTable->id : $priceTable;
+        
         return [
-            'year' => ['required', 'integer', 'min:2000', 'max:2100', 'unique:price_tables,year,'.$this->route('price_table')],
+            'year' => ['required', 'integer', 'min:2000', 'max:2100', 'unique:price_tables,year,'.$priceTableId],
             'is_active' => ['boolean'],
         ];
     }
