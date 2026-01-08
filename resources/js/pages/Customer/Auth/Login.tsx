@@ -82,6 +82,12 @@ export default function CustomerLogin() {
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
+                    <Link href="/forgot-password" className="text-primary hover:underline">
+                        {t('forgot_password', translations)}
+                    </Link>
+                </div>
+
+                <div className="text-center text-sm text-muted-foreground">
                     {t('dont_have_account', translations)}{' '}
                     <Link href={register().url} className="text-primary hover:underline">
                         {t('sign_up', translations)}

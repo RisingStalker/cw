@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customer\Auth;
+namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\PasswordReset;
@@ -16,7 +16,7 @@ class ResetPasswordController extends Controller
 {
     public function create(Request $request): Response
     {
-        return Inertia::render('Customer/Auth/ResetPassword', [
+        return Inertia::render('Admin/Auth/ResetPassword', [
             'email' => $request->email,
             'token' => $request->route('token'),
         ]);
@@ -30,7 +30,7 @@ class ResetPasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $status = Password::broker('customers')->reset(
+        $status = Password::broker('users')->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
@@ -44,7 +44,8 @@ class ResetPasswordController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', __($status))
+            ? redirect()->route('admin.login')->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
     }
 }
+

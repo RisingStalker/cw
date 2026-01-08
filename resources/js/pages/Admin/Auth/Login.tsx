@@ -81,6 +81,12 @@ export default function AdminLogin() {
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
+                    <Link href="/admin/forgot-password" className="text-primary hover:underline">
+                        {t('forgot_password', translations)}
+                    </Link>
+                </div>
+
+                <div className="text-center text-sm text-muted-foreground">
                     {t('dont_have_account', translations)}{' '}
                     <Link href="/admin/register" className="text-primary hover:underline">
                         {t('sign_up', translations)}

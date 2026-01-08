@@ -1,15 +1,24 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
 import { useTranslations, t } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { ChevronRight, ChevronDown, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type Category = {
     id: number;
     name: string;
+    children?: Category[];
+    level?: number;
 };
 
 type Item = {
@@ -35,7 +44,7 @@ type Paginated<T> = {
 
 type PageProps = {
     items: Paginated<Item>;
-    categories: Category[];
+    categoriesTree: Category[];
     filters: {
         search?: string;
         category_id?: number;
@@ -44,11 +53,13 @@ type PageProps = {
 
 export default function ItemsIndex() {
     const translations = useTranslations();
-    const { items, categories, filters } = usePage<PageProps>().props;
+    const { items, categoriesTree, filters } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [categoryId, setCategoryId] = useState(
         filters.category_id?.toString() ?? '',
     );
+    const [categorySelectorOpen, setCategorySelectorOpen] = useState(false);
+    const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
 
     const breadcrumbs = useMemo(
         () => [
@@ -59,6 +70,91 @@ export default function ItemsIndex() {
         ],
         [translations],
     );
+
+    const getSelectedCategoryName = (): string => {
+        if (!categoryId) return t('all_categories', translations);
+        
+        const findCategory = (cats: Category[]): Category | null => {
+            for (const cat of cats) {
+                if (cat.id.toString() === categoryId) return cat;
+                if (cat.children) {
+                    const found = findCategory(cat.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        
+        const category = findCategory(categoriesTree);
+        return category ? category.name : t('all_categories', translations);
+    };
+
+    const toggleCategoryExpand = (categoryId: number) => {
+        setExpandedCategories((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(categoryId)) {
+                newSet.delete(categoryId);
+            } else {
+                newSet.add(categoryId);
+            }
+            return newSet;
+        });
+    };
+
+    const renderCategoryTree = (categories: Category[], level: number = 0): React.ReactNode[] => {
+        const nodes: React.ReactNode[] = [];
+        
+        categories.forEach((category) => {
+            const hasChildren = category.children && category.children.length > 0;
+            const isExpanded = expandedCategories.has(category.id);
+            const isSelected = categoryId === category.id.toString();
+            
+            nodes.push(
+                <div key={category.id}>
+                    <div
+                        className={cn(
+                            "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-accent transition-colors",
+                            isSelected && "bg-accent"
+                        )}
+                        style={{ paddingLeft: `${level * 20 + 8}px` }}
+                        onClick={() => {
+                            setCategoryId(category.id.toString());
+                            setCategorySelectorOpen(false);
+                        }}
+                    >
+                        {hasChildren ? (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCategoryExpand(category.id);
+                                }}
+                                className="group flex items-center justify-center w-8 h-8 -ml-1 rounded bg-background border border-border hover:bg-primary/10 hover:border-primary/50 hover:cursor-pointer transition-all duration-200 cursor-pointer"
+                                aria-label={isExpanded ? t('collapse', translations) : t('expand', translations)}
+                            >
+                                {isExpanded ? (
+                                    <ChevronDown className="h-4 w-4 text-foreground/70 group-hover:text-primary transition-colors" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4 text-foreground/70 group-hover:text-primary transition-colors" />
+                                )}
+                            </button>
+                        ) : (
+                            <span className="w-8" />
+                        )}
+                        <span className="flex-1 text-sm">{category.name}</span>
+                        {isSelected && <Check className="h-4 w-4 text-primary" />}
+                    </div>
+                    {hasChildren && isExpanded && category.children && (
+                        <div>
+                            {renderCategoryTree(category.children, level + 1)}
+                        </div>
+                    )}
+                </div>
+            );
+        });
+        
+        return nodes;
+    };
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -109,18 +205,39 @@ export default function ItemsIndex() {
                             onChange={(e) => setSearch(e.target.value)}
                             className="flex-1"
                         />
-                        <select
-                            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            value={categoryId}
-                            onChange={(e) => setCategoryId(e.target.value)}
-                        >
-                            <option value="">{t('all_categories', translations)}</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
+                        <Popover open={categorySelectorOpen} onOpenChange={setCategorySelectorOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    className="w-full justify-between"
+                                >
+                                    <span className="truncate">
+                                        {getSelectedCategoryName()}
+                                    </span>
+                                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[400px] p-0" align="start">
+                                <div className="p-2 max-h-[300px] overflow-y-auto">
+                                    <div
+                                        className={cn(
+                                            "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-accent transition-colors",
+                                            !categoryId && "bg-accent"
+                                        )}
+                                        onClick={() => {
+                                            setCategoryId('');
+                                            setCategorySelectorOpen(false);
+                                        }}
+                                    >
+                                        <span className="w-4" />
+                                        <span className="flex-1 text-sm">{t('all_categories', translations)}</span>
+                                        {!categoryId && <Check className="h-4 w-4 text-primary" />}
+                                    </div>
+                                    {renderCategoryTree(categoriesTree)}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                         <div className="flex gap-2">
                             <Button type="submit">{t('apply', translations)}</Button>
                             <Button

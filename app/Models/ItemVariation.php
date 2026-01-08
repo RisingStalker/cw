@@ -18,6 +18,8 @@ class ItemVariation extends Model
         'type',
         'name',
         'surcharge',
+        'image_path',
+        'short_text',
     ];
 
     protected function casts(): array

@@ -15,6 +15,11 @@ Route::post('login', [\App\Http\Controllers\Customer\Auth\LoginController::class
 Route::get('register', [\App\Http\Controllers\Customer\Auth\RegisterController::class, 'create'])->name('register');
 Route::post('register', [\App\Http\Controllers\Customer\Auth\RegisterController::class, 'store']);
 Route::post('logout', [\App\Http\Controllers\Customer\Auth\LoginController::class, 'destroy'])->name('logout');
+// Customer password reset
+Route::get('forgot-password', [\App\Http\Controllers\Customer\Auth\ForgotPasswordController::class, 'create'])->name('password.request');
+Route::post('forgot-password', [\App\Http\Controllers\Customer\Auth\ForgotPasswordController::class, 'store'])->name('password.email');
+Route::get('reset-password/{token}', [\App\Http\Controllers\Customer\Auth\ResetPasswordController::class, 'create'])->name('password.reset');
+Route::post('reset-password', [\App\Http\Controllers\Customer\Auth\ResetPasswordController::class, 'store'])->name('password.update');
 
 // Customer authenticated routes
 Route::middleware(['auth:customer', 'customer'])->group(function () {
@@ -45,6 +50,11 @@ Route::prefix('admin')->group(function () {
     Route::get('register', [\App\Http\Controllers\Admin\Auth\RegisterController::class, 'create'])->name('admin.register');
     Route::post('register', [\App\Http\Controllers\Admin\Auth\RegisterController::class, 'store']);
     Route::post('logout', [\App\Http\Controllers\Admin\Auth\LoginController::class, 'destroy'])->name('admin.logout');
+    // Admin password reset
+    Route::get('forgot-password', [\App\Http\Controllers\Admin\Auth\ForgotPasswordController::class, 'create'])->name('admin.password.request');
+    Route::post('forgot-password', [\App\Http\Controllers\Admin\Auth\ForgotPasswordController::class, 'store'])->name('admin.password.email');
+    Route::get('reset-password/{token}', [\App\Http\Controllers\Admin\Auth\ResetPasswordController::class, 'create'])->name('admin.password.reset');
+    Route::post('reset-password', [\App\Http\Controllers\Admin\Auth\ResetPasswordController::class, 'store'])->name('admin.password.update');
 });
 
 // Password confirmation route (required by password.confirm middleware)
@@ -56,9 +66,7 @@ Route::middleware('auth')->group(function () {
 
 // Admin authenticated routes
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
-    Route::get('admin/dashboard', function () {
-        return Inertia::render('Admin/Dashboard/index');
-    })->name('admin.dashboard');
+    Route::get('admin/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);

@@ -20,6 +20,19 @@ return [
     'actions' => 'Actions',
     'loading' => 'Loading...',
     'no_data' => 'No data available',
+    'items_by_category' => 'Items by Category',
+    'price_table_distribution' => 'Price Table Distribution',
+    'projects_over_time' => 'Projects Over Time',
+    'customers_over_time' => 'Customers Over Time',
+    'category_distribution' => 'Category Distribution',
+    'recent_customers' => 'Recent Customers',
+    'recent_projects' => 'Recent Projects',
+    'recent_configurations' => 'Recent Configurations',
+    'items_with_most_variations' => 'Items with Most Variations',
+    'in_progress' => 'In Progress',
+    'locked' => 'Locked',
+    'completed' => 'Completed',
+    'created_at' => 'Created At',
     'confirm_delete' => 'Are you sure you want to delete this?',
     'success' => 'Success',
     'error' => 'Error',
@@ -609,4 +622,28 @@ return [
     'something_went_wrong' => 'Something went wrong.',
     'logo' => 'Logo',
     'loading' => 'Loading',
+
+    // New features - Categories
+    'parent_category' => 'Parent Category',
+    'parent' => 'Parent',
+    'no_parent_category' => 'No Parent Category (Top Level)',
+    'parent_category_description' => 'Select a parent category to create a hierarchical structure. Leave empty for top-level categories.',
+    'scope' => 'Scope',
+    'whole_house' => 'Whole House',
+    'room_specific' => 'Room Specific',
+    'scope_description' => 'Choose whether this category applies to the whole house (e.g., windows) or individual rooms (e.g., floors).',
+
+    // New features - Variations
+    'variation_image' => 'Variation Image',
+    'short_text' => 'Short Text',
+    'short_text_placeholder' => 'Enter a short description for this variation...',
+
+    // New features - Password Reset
+    'back_to_login' => 'Back to Login',
+    
+    // Tree selector
+    'max_level_reached' => 'Max level reached',
+    
+    // Price tables
+    'price_table_already_selected' => 'This price table is already selected for this variation. Please select a different one.',
 ];

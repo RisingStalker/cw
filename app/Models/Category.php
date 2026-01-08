@@ -14,6 +14,8 @@ class Category extends Model
     protected $fillable = [
         'name',
         'order',
+        'parent_id',
+        'scope',
     ];
 
     protected function casts(): array
@@ -26,5 +28,15 @@ class Category extends Model
     public function items(): HasMany
     {
         return $this->hasMany(Item::class);
+    }
+
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Category::class, 'parent_id');
     }
 }

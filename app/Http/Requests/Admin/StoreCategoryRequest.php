@@ -24,6 +24,8 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'order' => ['required', 'integer', 'min:0'],
+            'parent_id' => ['nullable', 'exists:categories,id'],
+            'scope' => ['required', 'in:whole_house,room'],
         ];
     }
 }

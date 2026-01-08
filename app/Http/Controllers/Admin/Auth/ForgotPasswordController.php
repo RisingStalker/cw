@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customer\Auth;
+namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -12,14 +12,14 @@ class ForgotPasswordController extends Controller
 {
     public function create(): Response
     {
-        return Inertia::render('Customer/Auth/ForgotPassword');
+        return Inertia::render('Admin/Auth/ForgotPassword');
     }
 
     public function store(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::broker('customers')->sendResetLink(
+        $status = Password::broker('users')->sendResetLink(
             $request->only('email')
         );
 
@@ -28,3 +28,4 @@ class ForgotPasswordController extends Controller
             : back()->withErrors(['email' => __($status)]);
     }
 }
+

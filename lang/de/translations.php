@@ -20,6 +20,19 @@ return [
     'actions' => 'Aktionen',
     'loading' => 'Lädt...',
     'no_data' => 'Keine Daten verfügbar',
+    'items_by_category' => 'Artikel nach Kategorie',
+    'price_table_distribution' => 'Preistabellen-Verteilung',
+    'projects_over_time' => 'Projekte im Zeitverlauf',
+    'customers_over_time' => 'Kunden im Zeitverlauf',
+    'category_distribution' => 'Kategorie-Verteilung',
+    'recent_customers' => 'Neueste Kunden',
+    'recent_projects' => 'Neueste Projekte',
+    'recent_configurations' => 'Neueste Konfigurationen',
+    'items_with_most_variations' => 'Artikel mit den meisten Variationen',
+    'in_progress' => 'In Bearbeitung',
+    'locked' => 'Gesperrt',
+    'completed' => 'Abgeschlossen',
+    'created_at' => 'Erstellt am',
     'confirm_delete' => 'Sind Sie sicher, dass Sie dies löschen möchten?',
     'success' => 'Erfolg',
     'error' => 'Fehler',
@@ -597,6 +610,30 @@ return [
     'something_went_wrong' => 'Etwas ist schief gelaufen.',
     'logo' => 'Logo',
     'loading' => 'Lädt',
+
+    // New features - Categories
+    'parent_category' => 'Übergeordnete Kategorie',
+    'parent' => 'Übergeordnet',
+    'no_parent_category' => 'Keine übergeordnete Kategorie (Oberste Ebene)',
+    'parent_category_description' => 'Wählen Sie eine übergeordnete Kategorie, um eine hierarchische Struktur zu erstellen. Leer lassen für Kategorien der obersten Ebene.',
+    'scope' => 'Bereich',
+    'whole_house' => 'Gesamtes Haus',
+    'room_specific' => 'Raumspezifisch',
+    'scope_description' => 'Wählen Sie, ob diese Kategorie für das gesamte Haus (z.B. Fenster) oder einzelne Räume (z.B. Böden) gilt.',
+
+    // New features - Variations
+    'variation_image' => 'Variationsbild',
+    'short_text' => 'Kurzer Text',
+    'short_text_placeholder' => 'Geben Sie eine kurze Beschreibung für diese Variation ein...',
+
+    // New features - Password Reset
+    'back_to_login' => 'Zurück zur Anmeldung',
+    
+    // Tree selector
+    'max_level_reached' => 'Maximale Ebene erreicht',
+    
+    // Price tables
+    'price_table_already_selected' => 'Diese Preistabelle ist bereits für diese Variation ausgewählt. Bitte wählen Sie eine andere aus.',
 ];
 
 

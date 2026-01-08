@@ -15,19 +15,68 @@ class CategoryController extends Controller
 {
     public function index(): Response
     {
-        $categories = Category::orderBy('order')->withCount('items')->get();
+        // Load all categories with their relationships
+        $allCategories = Category::with(['parent', 'children'])
+            ->withCount('items')
+            ->get();
+
+        // Build tree structure: get top-level categories and their nested children
+        $categories = $allCategories->whereNull('parent_id')
+            ->sortBy('order')
+            ->values()
+            ->map(function ($category) use ($allCategories) {
+                return $this->buildCategoryTree($category, $allCategories);
+            });
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,
         ]);
     }
 
+    /**
+     * Recursively build category tree structure
+     */
+    private function buildCategoryTree(Category $category, $allCategories, $level = 0): array
+    {
+        $children = $allCategories->where('parent_id', $category->id)
+            ->sortBy('order')
+            ->values()
+            ->map(function ($child) use ($allCategories, $level) {
+                return $this->buildCategoryTree($child, $allCategories, $level + 1);
+            });
+
+        return [
+            'id' => $category->id,
+            'name' => $category->name,
+            'order' => $category->order,
+            'parent_id' => $category->parent_id,
+            'scope' => $category->scope,
+            'items_count' => $category->items_count,
+            'parent' => $category->parent ? [
+                'id' => $category->parent->id,
+                'name' => $category->parent->name,
+            ] : null,
+            'children' => $children->toArray(),
+            'level' => $level,
+        ];
+    }
+
     public function create(): Response
     {
         $maxOrder = Category::max('order') ?? 0;
+        
+        // Build tree structure for parent selection
+        $allCategories = Category::with(['parent', 'children'])->get();
+        $categoryTree = $allCategories->whereNull('parent_id')
+            ->sortBy('order')
+            ->values()
+            ->map(function ($category) use ($allCategories) {
+                return $this->buildCategoryTree($category, $allCategories);
+            });
 
         return Inertia::render('Admin/Categories/Create', [
             'nextOrder' => $maxOrder + 1,
+            'parentCategoriesTree' => $categoryTree,
         ]);
     }
 
@@ -41,9 +90,46 @@ class CategoryController extends Controller
 
     public function edit(Category $category): Response
     {
+        // Build tree structure for parent selection, excluding current category and its descendants
+        $allCategories = Category::with(['parent', 'children'])
+            ->where('id', '!=', $category->id)
+            ->get();
+        
+        // Exclude current category and all its descendants
+        $excludeIds = $this->getDescendantIds($category, $allCategories);
+        $excludeIds[] = $category->id;
+        
+        $availableCategories = $allCategories->reject(function ($cat) use ($excludeIds) {
+            return in_array($cat->id, $excludeIds);
+        });
+        
+        $categoryTree = $availableCategories->whereNull('parent_id')
+            ->sortBy('order')
+            ->values()
+            ->map(function ($cat) use ($availableCategories) {
+                return $this->buildCategoryTree($cat, $availableCategories);
+            });
+
         return Inertia::render('Admin/Categories/Edit', [
             'category' => $category,
+            'parentCategoriesTree' => $categoryTree,
         ]);
+    }
+
+    /**
+     * Get all descendant IDs of a category (to prevent circular references)
+     */
+    private function getDescendantIds(Category $category, $allCategories): array
+    {
+        $ids = [];
+        $children = $allCategories->where('parent_id', $category->id);
+        
+        foreach ($children as $child) {
+            $ids[] = $child->id;
+            $ids = array_merge($ids, $this->getDescendantIds($child, $allCategories));
+        }
+        
+        return $ids;
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse

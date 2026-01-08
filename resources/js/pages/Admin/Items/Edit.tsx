@@ -15,14 +15,25 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Plus, Trash2, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Trash2, X, ZoomIn, ZoomOut, RotateCcw, ChevronDown, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslations, t } from '@/hooks/use-translations';
+import { cn } from '@/lib/utils';
 
-type Category = { id: number; name: string };
+type Category = { 
+    id: number; 
+    name: string;
+    children?: Category[];
+    level?: number;
+};
 type PriceTable = { id: number; year: number };
 type ItemImage = { id: number; path: string; order: number; url: string };
 type ItemVariation = {
@@ -30,6 +41,8 @@ type ItemVariation = {
     type: 'size' | 'color';
     name: string;
     surcharge: string;
+    image_path?: string | null;
+    short_text?: string | null;
 };
 type ItemPriceTable = {
     id: number;
@@ -54,7 +67,7 @@ type Item = {
 
 type PageProps = {
     item: Item;
-    categories: Category[];
+    categoriesTree: Category[];
     priceTables: PriceTable[];
 };
 
@@ -62,6 +75,10 @@ type Variation = {
     type: 'size' | 'color';
     name: string;
     surcharge: string;
+    image?: File | null;
+    short_text?: string;
+    existing_image_path?: string | null;
+    price_tables?: PriceTableEntry[];
 };
 
 type PriceTableEntry = {
@@ -71,12 +88,14 @@ type PriceTableEntry = {
 
 export default function ItemsEdit() {
     const translations = useTranslations();
-    const { item, categories, priceTables } = usePage<PageProps>().props;
+    const { item, categoriesTree, priceTables } = usePage<PageProps>().props;
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [zoomLevel, setZoomLevel] = useState(1);
     const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const [categorySelectorOpen, setCategorySelectorOpen] = useState(false);
+    const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
 
     const { data, setData, put, processing, errors, delete: deleteMethod } =
         useForm({
@@ -95,6 +114,13 @@ export default function ItemsEdit() {
                 type: v.type,
                 name: v.name,
                 surcharge: v.surcharge,
+                image: null,
+                short_text: v.short_text || '',
+                existing_image_path: v.image_path,
+                price_tables: (v.priceTables || []).map((pt) => ({
+                    price_table_id: pt.id.toString(),
+                    surcharge: pt.pivot.surcharge,
+                })),
             })) as Variation[],
             price_tables: (item.priceTables || []).map((pt) => ({
                 price_table_id: pt.id.toString(),
@@ -114,6 +140,92 @@ export default function ItemsEdit() {
         });
     };
 
+    // Get selected category name
+    const getSelectedCategoryName = () => {
+        if (!data.category_id) return t('select_category', translations);
+        
+        const findCategory = (cats: Category[]): Category | null => {
+            for (const cat of cats) {
+                if (cat.id.toString() === data.category_id) return cat;
+                if (cat.children) {
+                    const found = findCategory(cat.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        
+        const found = findCategory(categoriesTree);
+        return found ? found.name : t('select_category', translations);
+    };
+
+    const toggleCategoryExpand = (categoryId: number) => {
+        setExpandedCategories((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(categoryId)) {
+                newSet.delete(categoryId);
+            } else {
+                newSet.add(categoryId);
+            }
+            return newSet;
+        });
+    };
+
+    const renderCategoryTree = (categories: Category[], level: number = 0): React.ReactNode[] => {
+        const nodes: React.ReactNode[] = [];
+        
+        categories.forEach((category) => {
+            const hasChildren = category.children && category.children.length > 0;
+            const isExpanded = expandedCategories.has(category.id);
+            const isSelected = data.category_id === category.id.toString();
+            
+            nodes.push(
+                <div key={category.id}>
+                    <div
+                        className={cn(
+                            "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-accent transition-colors",
+                            isSelected && "bg-accent"
+                        )}
+                        style={{ paddingLeft: `${level * 20 + 8}px` }}
+                        onClick={() => {
+                            setData('category_id', category.id.toString());
+                            setCategorySelectorOpen(false);
+                        }}
+                    >
+                        {hasChildren ? (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCategoryExpand(category.id);
+                                }}
+                                className="group flex items-center justify-center w-8 h-8 -ml-1 rounded bg-background border border-border hover:bg-primary/10 hover:border-primary/50 hover:cursor-pointer transition-all duration-200 cursor-pointer"
+                                aria-label={isExpanded ? t('collapse', translations) : t('expand', translations)}
+                            >
+                                {isExpanded ? (
+                                    <ChevronDown className="h-4 w-4 text-foreground/70 group-hover:text-primary transition-colors" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4 text-foreground/70 group-hover:text-primary transition-colors" />
+                                )}
+                            </button>
+                        ) : (
+                            <span className="w-8" />
+                        )}
+                        <span className="flex-1 text-sm">{category.name}</span>
+                        {isSelected && <Check className="h-4 w-4 text-primary" />}
+                    </div>
+                    {hasChildren && isExpanded && category.children && (
+                        <div>
+                            {renderCategoryTree(category.children, level + 1)}
+                        </div>
+                    )}
+                </div>
+            );
+        });
+        
+        return nodes;
+    };
+
     const handleDeleteImage = (imageId: number) => {
         if (!confirm(t('delete_this_image', translations))) {
             return;
@@ -127,7 +239,7 @@ export default function ItemsEdit() {
     const addVariation = () => {
         setData('variations', [
             ...data.variations,
-            { type: 'size', name: '', surcharge: '0' },
+            { type: 'size', name: '', surcharge: '0', image: null, short_text: '', existing_image_path: null, price_tables: [] },
         ]);
     };
 
@@ -148,29 +260,6 @@ export default function ItemsEdit() {
         setData('variations', updated);
     };
 
-    const addPriceTable = () => {
-        setData('price_tables', [
-            ...data.price_tables,
-            { price_table_id: '', additional_cost: '0' },
-        ]);
-    };
-
-    const removePriceTable = (index: number) => {
-        setData(
-            'price_tables',
-            data.price_tables.filter((_, i) => i !== index),
-        );
-    };
-
-    const updatePriceTable = (
-        index: number,
-        key: keyof PriceTableEntry,
-        value: string,
-    ) => {
-        const updated = [...data.price_tables];
-        updated[index] = { ...updated[index], [key]: value };
-        setData('price_tables', updated);
-    };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -202,26 +291,25 @@ export default function ItemsEdit() {
                             <label className="text-sm font-medium">
                                 {t('category', translations)} *
                             </label>
-                            <Select
-                                value={data.category_id}
-                                onValueChange={(value) =>
-                                    setData('category_id', value)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder={t('select_category', translations)} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {categories.map((category) => (
-                                        <SelectItem
-                                            key={category.id}
-                                            value={category.id.toString()}
-                                        >
-                                            {category.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <Popover open={categorySelectorOpen} onOpenChange={setCategorySelectorOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        role="combobox"
+                                        className="w-full justify-between"
+                                    >
+                                        <span className="truncate">
+                                            {getSelectedCategoryName()}
+                                        </span>
+                                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[400px] p-0" align="start">
+                                    <div className="p-2 max-h-[300px] overflow-y-auto">
+                                        {renderCategoryTree(categoriesTree)}
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                             {errors.category_id && (
                                 <p className="text-sm text-destructive">
                                     {errors.category_id}
@@ -432,63 +520,204 @@ export default function ItemsEdit() {
                         {data.variations.map((variation, index) => (
                             <div
                                 key={index}
-                                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row"
+                                className="flex flex-col gap-3 rounded-lg border p-4"
                             >
-                                <Select
-                                    value={variation.type}
-                                    onValueChange={(value) =>
-                                        updateVariation(
-                                            index,
-                                            'type',
-                                            value as 'size' | 'color',
-                                        )
-                                    }
-                                >
-                                    <SelectTrigger className="sm:w-32">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="size">{t('size', translations)}</SelectItem>
-                                        <SelectItem value="color">
-                                            {t('color', translations)}
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Input
-                                    placeholder={t('name_placeholder', translations)}
-                                    value={variation.name}
-                                    onChange={(e) =>
-                                        updateVariation(
-                                            index,
-                                            'name',
-                                            e.target.value,
-                                        )
-                                    }
-                                    className="flex-1"
-                                />
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    placeholder={t('surcharge_placeholder', translations)}
-                                    value={variation.surcharge}
-                                    onChange={(e) =>
-                                        updateVariation(
-                                            index,
-                                            'surcharge',
-                                            e.target.value,
-                                        )
-                                    }
-                                    className="sm:w-32"
-                                />
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => removeVariation(index)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
+                                <div className="flex flex-col gap-3 sm:flex-row">
+                                    <Select
+                                        value={variation.type}
+                                        onValueChange={(value) =>
+                                            updateVariation(
+                                                index,
+                                                'type',
+                                                value as 'size' | 'color',
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger className="sm:w-32">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="size">{t('size', translations)}</SelectItem>
+                                            <SelectItem value="color">
+                                                {t('color', translations)}
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Input
+                                        placeholder={t('name_placeholder', translations)}
+                                        value={variation.name}
+                                        onChange={(e) =>
+                                            updateVariation(
+                                                index,
+                                                'name',
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="flex-1"
+                                    />
+                                    <Input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        placeholder={t('surcharge_placeholder', translations)}
+                                        value={variation.surcharge}
+                                        onChange={(e) =>
+                                            updateVariation(
+                                                index,
+                                                'surcharge',
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="sm:w-32"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => removeVariation(index)}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                                {variation.existing_image_path && (
+                                    <div className="relative w-32 h-32 rounded-lg border overflow-hidden">
+                                        <img
+                                            src={`/storage/${variation.existing_image_path}`}
+                                            alt={variation.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                )}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">
+                                        {t('variation_image', translations)}
+                                    </label>
+                                    <Input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0] || null;
+                                            updateVariation(index, 'image', file);
+                                        }}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">
+                                        {t('short_text', translations)}
+                                    </label>
+                                    <textarea
+                                        className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        placeholder={t('short_text_placeholder', translations)}
+                                        value={variation.short_text || ''}
+                                        onChange={(e) =>
+                                            updateVariation(
+                                                index,
+                                                'short_text',
+                                                e.target.value,
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-sm font-medium">
+                                            {t('price_tables', translations)}
+                                        </label>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                const updated = [...data.variations];
+                                                updated[index].price_tables = [
+                                                    ...(updated[index].price_tables || []),
+                                                    { price_table_id: '', surcharge: '0' },
+                                                ];
+                                                setData('variations', updated);
+                                            }}
+                                        >
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            {t('add_price_table', translations)}
+                                        </Button>
+                                    </div>
+                                    {(variation.price_tables || []).map((pt, ptIndex) => (
+                                        <div
+                                            key={ptIndex}
+                                            className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row"
+                                        >
+                                            <Select
+                                                value={pt.price_table_id}
+                                                onValueChange={(value) => {
+                                                    const updated = [...data.variations];
+                                                    // Check if this price table is already selected in another row
+                                                    const isDuplicate = updated[index].price_tables.some(
+                                                        (otherPt, otherIndex) => 
+                                                            otherIndex !== ptIndex && 
+                                                            otherPt.price_table_id === value &&
+                                                            value !== ''
+                                                    );
+                                                    
+                                                    if (isDuplicate) {
+                                                        alert(t('price_table_already_selected', translations) || 'This price table is already selected for this variation. Please select a different one.');
+                                                        return;
+                                                    }
+                                                    
+                                                    updated[index].price_tables[ptIndex].price_table_id = value;
+                                                    setData('variations', updated);
+                                                }}
+                                            >
+                                                <SelectTrigger className="flex-1">
+                                                    <SelectValue placeholder={t('select_price_table_placeholder', translations)} />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {priceTables.map((table) => {
+                                                        // Check if this price table is already selected in another row
+                                                        const isSelected = variation.price_tables?.some(
+                                                            (otherPt, otherIndex) => 
+                                                                otherPt.price_table_id === table.id.toString() &&
+                                                                otherPt.price_table_id !== pt.price_table_id
+                                                        );
+                                                        
+                                                        return (
+                                                            <SelectItem
+                                                                key={table.id}
+                                                                value={table.id.toString()}
+                                                                disabled={isSelected}
+                                                            >
+                                                                {table.year} {isSelected && '(Already selected)'}
+                                                            </SelectItem>
+                                                        );
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                placeholder={t('surcharge_placeholder', translations)}
+                                                value={pt.surcharge}
+                                                onChange={(e) => {
+                                                    const updated = [...data.variations];
+                                                    updated[index].price_tables[ptIndex].surcharge = e.target.value;
+                                                    setData('variations', updated);
+                                                }}
+                                                className="sm:w-40"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => {
+                                                    const updated = [...data.variations];
+                                                    updated[index].price_tables = updated[index].price_tables.filter((_, i) => i !== ptIndex);
+                                                    setData('variations', updated);
+                                                }}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         ))}
                         {data.variations.length === 0 && (
@@ -499,87 +728,6 @@ export default function ItemsEdit() {
                         {errors.variations && (
                             <p className="text-sm text-destructive">
                                 {errors.variations}
-                            </p>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle>{t('price_tables', translations)}</CardTitle>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={addPriceTable}
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            {t('add_price_table', translations)}
-                        </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {data.price_tables.map((pt, index) => (
-                            <div
-                                key={index}
-                                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row"
-                            >
-                                <Select
-                                    value={pt.price_table_id}
-                                    onValueChange={(value) =>
-                                        updatePriceTable(
-                                            index,
-                                            'price_table_id',
-                                            value,
-                                        )
-                                    }
-                                >
-                                    <SelectTrigger className="flex-1">
-                                        <SelectValue placeholder={t('select_price_table_placeholder', translations)} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {priceTables.map((table) => (
-                                            <SelectItem
-                                                key={table.id}
-                                                value={table.id.toString()}
-                                            >
-                                                {table.year}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    placeholder={t('additional_cost_placeholder', translations)}
-                                    value={pt.additional_cost}
-                                    onChange={(e) =>
-                                        updatePriceTable(
-                                            index,
-                                            'additional_cost',
-                                            e.target.value,
-                                        )
-                                    }
-                                    className="sm:w-40"
-                                />
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => removePriceTable(index)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        ))}
-                        {data.price_tables.length === 0 && (
-                            <p className="text-sm text-muted-foreground">
-                                {t('no_price_tables_added', translations)}
-                            </p>
-                        )}
-                        {errors.price_tables && (
-                            <p className="text-sm text-destructive">
-                                {errors.price_tables}
                             </p>
                         )}
                     </CardContent>

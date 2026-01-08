@@ -16,16 +16,25 @@ class HandleLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = $request->cookie('locale', config('app.locale', 'en'));
+        $defaultLocale = config('app.locale', 'de');
+        $locale = $request->cookie('locale', $defaultLocale);
         
         // Validate locale (only allow 'en' or 'de')
         if (!in_array($locale, ['en', 'de'])) {
-            $locale = 'en';
+            $locale = $defaultLocale;
         }
         
         App::setLocale($locale);
 
-        return $next($request);
+        $response = $next($request);
+        
+        // Set cookie if it doesn't exist or if it's different from the current locale
+        if (!$request->hasCookie('locale') || $request->cookie('locale') !== $locale) {
+            $response->cookie('locale', $locale, 365 * 24 * 60, '/', null, false, false);
+        }
+
+        return $response;
     }
 }
+
 

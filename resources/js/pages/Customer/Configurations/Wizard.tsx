@@ -230,8 +230,8 @@ export default function ConfigurationWizard({ project, configuration, categories
                     ...prev,
                     {
                         item_id: itemId,
-                        project_room_id: roomId,
-                        project_bathroom_id: bathroomId,
+                        project_room_id: roomId ?? null,
+                        project_bathroom_id: bathroomId ?? null,
                     },
                 ];
             }
@@ -327,17 +327,16 @@ export default function ConfigurationWizard({ project, configuration, categories
                         <h1 className="text-3xl font-bold tracking-tight">{configuration.name}</h1>
                         <p className="text-muted-foreground mt-2">{t('configure_project', translations)}: {project.name}</p>
                     </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="text-right">
-                        <div className="text-sm text-muted-foreground">{t('total_additional_cost', translations)}</div>
-                        <div className="text-2xl font-bold">€{totalCost.toFixed(2)}</div>
+                    <div className="flex items-center gap-4">
+                        <div className="text-right">
+                            <div className="text-sm text-muted-foreground">{t('total_additional_cost', translations)}</div>
+                            <div className="text-2xl font-bold">€{totalCost.toFixed(2)}</div>
+                        </div>
+                        <Button onClick={handleSave} disabled={processing}>
+                            <Save className="mr-2 h-4 w-4" />
+                            {t('save_progress', translations)}
+                        </Button>
                     </div>
-                    <Button onClick={handleSave} disabled={processing}>
-                        <Save className="mr-2 h-4 w-4" />
-                        {t('save_progress', translations)}
-                    </Button>
-                </div>
                 </div>
 
                 {/* Progress */}
@@ -388,7 +387,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                 required
                                             />
                                             <div className="flex-1">
-                                                <Label className="text-base font-medium">{item.title}</Label>
+                                                <div className="text-base font-medium">{item.title}</div>
                                                 {item.description && (
                                                     <p className="text-sm text-muted-foreground">{item.description}</p>
                                                 )}
@@ -453,7 +452,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                                     <div className="flex-1">
                                                                         <div className="flex items-start justify-between">
                                                                             <div>
-                                                                                <Label className="text-base font-medium">{item.title}</Label>
+                                                                                <div className="text-base font-medium">{item.title}</div>
                                                                                 {item.description && (
                                                                                     <p className="text-sm text-muted-foreground">
                                                                                         {item.description}
@@ -522,7 +521,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                                 <div className="flex-1">
                                                                     <div className="flex items-start justify-between">
                                                                         <div>
-                                                                            <Label className="text-base font-medium">{item.title}</Label>
+                                                                            <div className="text-base font-medium">{item.title}</div>
                                                                             {item.description && (
                                                                                 <p className="text-sm text-muted-foreground">
                                                                                     {item.description}
@@ -566,7 +565,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                     <div className="flex-1">
                                                         <div className="flex items-start justify-between">
                                                             <div>
-                                                                <Label className="text-base font-medium">{item.title}</Label>
+                                                                <div className="text-base font-medium">{item.title}</div>
                                                                 {item.description && (
                                                                     <p className="text-sm text-muted-foreground">
                                                                         {item.description}
@@ -610,7 +609,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                     <div className="flex-1">
                                                         <div className="flex items-start justify-between">
                                                             <div>
-                                                                <Label className="text-base font-medium">{item.title}</Label>
+                                                                <div className="text-base font-medium">{item.title}</div>
                                                                 {item.description && (
                                                                     <p className="text-sm text-muted-foreground">
                                                                         {item.description}
@@ -657,7 +656,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                     <div className="flex-1">
                                                         <div className="flex items-start justify-between">
                                                             <div>
-                                                                <Label className="text-base font-medium">{item.title}</Label>
+                                                                <div className="text-base font-medium">{item.title}</div>
                                                                 {item.description && (
                                                                     <p className="text-sm text-muted-foreground">
                                                                         {item.description}

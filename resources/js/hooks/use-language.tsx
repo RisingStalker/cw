@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 
 export type Language = 'en' | 'de';
 
@@ -13,6 +13,8 @@ const setCookie = (name: string, value: string, days = 365) => {
 };
 
 export function useLanguage() {
+    const page = usePage<{ locale?: string }>();
+    
     // Get language from cookie if available (for SSR)
     const getCookie = (name: string): string | null => {
         if (typeof document === 'undefined') {
@@ -27,12 +29,20 @@ export function useLanguage() {
     };
 
     const getInitialLanguage = (): Language => {
-        const savedLanguage = localStorage.getItem('locale') as Language | null;
-        const cookieLanguage = getCookie('locale') as Language | null;
-        const validLanguage = (cookieLanguage || savedLanguage || 'en') as Language;
+        // First, try to get the server's locale from Inertia props (most authoritative)
+        const serverLocale = page.props.locale as Language | undefined;
         
-        if (!['en', 'de'].includes(validLanguage)) {
-            return 'en';
+        // Then check cookie (server-set)
+        const cookieLanguage = getCookie('locale') as Language | null;
+        
+        // Priority: server locale > cookie > default 'de'
+        // Ignore localStorage on initial load to prevent old values from overriding default
+        let validLanguage: Language = 'de';
+        
+        if (serverLocale && ['en', 'de'].includes(serverLocale)) {
+            validLanguage = serverLocale;
+        } else if (cookieLanguage && ['en', 'de'].includes(cookieLanguage)) {
+            validLanguage = cookieLanguage;
         }
         
         return validLanguage;
@@ -63,11 +73,37 @@ export function useLanguage() {
     }, []);
 
     useEffect(() => {
-        const currentLanguage = getInitialLanguage();
-        if (currentLanguage !== language) {
-            setLanguage(currentLanguage);
+        // Get server locale (most authoritative source)
+        const serverLocale = page.props.locale as Language | undefined;
+        const cookieLanguage = getCookie('locale') as Language | null;
+        
+        // Determine the correct language to use
+        // Priority: server locale > cookie > default 'de'
+        // Ignore localStorage on first visit (when no cookie exists)
+        let currentLanguage: Language;
+        if (serverLocale && ['en', 'de'].includes(serverLocale)) {
+            currentLanguage = serverLocale;
+        } else if (cookieLanguage && ['en', 'de'].includes(cookieLanguage)) {
+            currentLanguage = cookieLanguage;
+        } else {
+            currentLanguage = 'de';
         }
-    }, []);
+        
+        // Ensure cookie is set if it doesn't exist (for first visit)
+        if (!cookieLanguage) {
+            setCookie('locale', currentLanguage);
+            // Also update localStorage to keep them in sync
+            localStorage.setItem('locale', currentLanguage);
+        }
+        
+        // Update language state if it's different
+        setLanguage(prevLanguage => {
+            if (prevLanguage !== currentLanguage) {
+                return currentLanguage;
+            }
+            return prevLanguage;
+        });
+    }, [page.props.locale]);
 
     return { language, updateLanguage } as const;
 }

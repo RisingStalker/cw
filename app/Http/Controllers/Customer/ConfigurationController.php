@@ -99,7 +99,8 @@ class ConfigurationController extends Controller
         }
 
         $priceTable = $project->getEffectivePriceTable();
-        $categories = \App\Models\Category::orderBy('order')
+        $categories = \App\Models\Category::orderByRaw("CASE WHEN scope = 'whole_house' THEN 0 ELSE 1 END")
+            ->orderBy('order')
             ->with(['items' => function ($query) use ($priceTable) {
                 $query->where(function ($q) {
                     $q->whereNull('hidden_until')
