@@ -240,6 +240,7 @@ class ItemController extends Controller
                     'name' => $variation->name,
                     'surcharge' => $variation->surcharge,
                     'image_path' => $variation->image_path,
+                    'image_url' => $variation->image_path ? asset('storage/' . $variation->image_path) : null,
                     'short_text' => $variation->short_text,
                     'priceTables' => $variation->priceTables->map(function ($priceTable) {
                         return [
