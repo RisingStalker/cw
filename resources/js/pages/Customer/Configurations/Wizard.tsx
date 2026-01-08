@@ -315,26 +315,30 @@ export default function ConfigurationWizard({ project, configuration, categories
 
             <div className="space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-4">
                         <Link href={configurationsIndex({ project: project.id }).url}>
                             <Button variant="ghost" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
                                 {t('back', translations)}
-                        </Button>
-                    </Link>
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">{configuration.name}</h1>
-                        <p className="text-muted-foreground mt-2">{t('configure_project', translations)}: {project.name}</p>
+                            </Button>
+                        </Link>
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{configuration.name}</h1>
+                            <p className="mt-1 text-sm text-muted-foreground md:text-base">
+                                {t('configure_project', translations)}: {project.name}
+                            </p>
+                        </div>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="text-right">
-                            <div className="text-sm text-muted-foreground">{t('total_additional_cost', translations)}</div>
-                            <div className="text-2xl font-bold">€{totalCost.toFixed(2)}</div>
+                            <div className="text-xs text-muted-foreground md:text-sm">{t('total_additional_cost', translations)}</div>
+                            <div className="text-xl font-bold md:text-2xl">€{totalCost.toFixed(2)}</div>
                         </div>
-                        <Button onClick={handleSave} disabled={processing}>
+                        <Button onClick={handleSave} disabled={processing} size="sm" className="md:size-default">
                             <Save className="mr-2 h-4 w-4" />
-                            {t('save_progress', translations)}
+                            <span className="hidden md:inline">{t('save_progress', translations)}</span>
+                            <span className="md:hidden">{t('save', translations)}</span>
                         </Button>
                     </div>
                 </div>
@@ -353,13 +357,14 @@ export default function ConfigurationWizard({ project, configuration, categories
                 </Card>
 
                 {/* Category Navigation */}
-                <div className="flex gap-2 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
                     {categories.map((category, index) => (
                         <Button
                             key={category.id}
                             variant={index === currentCategoryIndex ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => setCurrentCategoryIndex(index)}
+                            className="whitespace-nowrap"
                         >
                             {category.name}
                         </Button>
@@ -379,19 +384,22 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {currentCategory.items
                                     .filter((item) => item.is_standard)
                                     .map((item) => (
-                                        <div key={item.id} className="flex items-start gap-4 rounded-lg border-2 border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
+                                        <div 
+                                            key={item.id} 
+                                            className="flex items-start gap-4 rounded-lg border-2 border-green-200 bg-green-50 p-4 transition-colors hover:bg-green-100 dark:border-green-800 dark:bg-green-950 dark:hover:bg-green-900"
+                                        >
                                             <Checkbox
                                                 checked={isItemSelected(item.id)}
                                                 onCheckedChange={() => toggleItem(item.id)}
-                                                className="mt-1"
+                                                className="mt-1 shrink-0"
                                                 required
                                             />
-                                            <div className="flex-1">
-                                                <div className="text-base font-medium">{item.title}</div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-base font-semibold text-green-900 dark:text-green-100">{item.title}</div>
                                                 {item.description && (
-                                                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                                                    <p className="mt-1 text-sm text-green-700 dark:text-green-300">{item.description}</p>
                                                 )}
-                                                <div className="mt-2 text-sm font-medium text-green-600">
+                                                <div className="mt-2 text-xs font-medium text-green-600 dark:text-green-400">
                                                     {t('standard_option_required', translations)}
                                                 </div>
                                             </div>
@@ -410,7 +418,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Room-specific items (e.g., flooring) */}
                                 {project.rooms.length > 0 && currentCategory.name.toLowerCase().includes('floor') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">{t('room_flooring', translations)}</h3>
+                                        <h3 className="text-lg font-semibold">{t('room_flooring', translations)}</h3>
                                         {project.rooms.map((room) => (
                                             <Collapsible
                                                 key={room.id}
@@ -439,27 +447,29 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                             return (
                                                                 <div
                                                                     key={`${item.id}-${room.id}`}
-                                                                    className={`flex items-start gap-4 rounded-lg border p-4 ${
-                                                                        isProhibitedItem ? 'opacity-50' : ''
+                                                                    className={`flex items-start gap-4 rounded-lg border p-4 transition-colors ${
+                                                                        isProhibitedItem 
+                                                                            ? 'opacity-50 cursor-not-allowed bg-muted/50' 
+                                                                            : 'hover:bg-accent/50'
                                                                     }`}
                                                                 >
                                                                     <Checkbox
                                                                         checked={isItemSelected(item.id, room.id)}
                                                                         onCheckedChange={() => toggleItem(item.id, room.id)}
                                                                         disabled={isProhibitedItem}
-                                                                        className="mt-1"
+                                                                        className="mt-1 shrink-0"
                                                                     />
-                                                                    <div className="flex-1">
-                                                                        <div className="flex items-start justify-between">
-                                                                            <div>
-                                                                                <div className="text-base font-medium">{item.title}</div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <div className="text-base font-semibold">{item.title}</div>
                                                                                 {item.description && (
-                                                                                    <p className="text-sm text-muted-foreground">
+                                                                                    <p className="mt-1 text-sm text-muted-foreground">
                                                                                         {item.description}
                                                                                     </p>
                                                                                 )}
                                                                             </div>
-                                                                            <div className="text-right">
+                                                                            <div className="shrink-0 text-left sm:text-right">
                                                                                 <div className="text-lg font-bold">
                                                                                     €{(parseFloat(item.additional_cost || '0') * parseFloat(room.floor_space)).toFixed(2)}
                                                                                 </div>
@@ -481,7 +491,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Bathroom-specific items */}
                                 {project.bathrooms.length > 0 && currentCategory.name.toLowerCase().includes('bathroom') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">{t('bathroom_options', translations)}</h3>
+                                        <h3 className="text-lg font-semibold">{t('bathroom_options', translations)}</h3>
                                         {project.bathrooms.map((bathroom) => (
                                             <Collapsible
                                                 key={bathroom.id}
@@ -511,24 +521,24 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                         .map((item) => (
                                                             <div
                                                                 key={`${item.id}-${bathroom.id}`}
-                                                                className="flex items-start gap-4 rounded-lg border p-4"
+                                                                className="flex items-start gap-4 rounded-lg border p-4 transition-colors hover:bg-accent/50"
                                                             >
                                                                 <Checkbox
                                                                     checked={isItemSelected(item.id, undefined, bathroom.id)}
                                                                     onCheckedChange={() => toggleItem(item.id, undefined, bathroom.id)}
-                                                                    className="mt-1"
+                                                                    className="mt-1 shrink-0"
                                                                 />
-                                                                <div className="flex-1">
-                                                                    <div className="flex items-start justify-between">
-                                                                        <div>
-                                                                            <div className="text-base font-medium">{item.title}</div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <div className="text-base font-semibold">{item.title}</div>
                                                                             {item.description && (
-                                                                                <p className="text-sm text-muted-foreground">
+                                                                                <p className="mt-1 text-sm text-muted-foreground">
                                                                                     {item.description}
                                                                                 </p>
                                                                             )}
                                                                         </div>
-                                                                        <div className="text-right">
+                                                                        <div className="shrink-0 text-left sm:text-right">
                                                                             <div className="text-lg font-bold">
                                                                                 €{parseFloat(item.additional_cost || '0').toFixed(2)}
                                                                             </div>
@@ -546,7 +556,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Facade items */}
                                 {currentCategory.name.toLowerCase().includes('facade') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">{t('facade_options', translations)}</h3>
+                                        <h3 className="text-lg font-semibold">{t('facade_options', translations)}</h3>
                                         <p className="text-sm text-muted-foreground">
                                             {t('facade_area', translations)}: {project.facade_area} m²
                                         </p>
@@ -555,24 +565,24 @@ export default function ConfigurationWizard({ project, configuration, categories
                                             .map((item) => (
                                                 <div
                                                     key={item.id}
-                                                    className="flex items-start gap-4 rounded-lg border p-4"
+                                                    className="flex items-start gap-4 rounded-lg border p-4 transition-colors hover:bg-accent/50"
                                                 >
                                                     <Checkbox
                                                         checked={isItemSelected(item.id)}
                                                         onCheckedChange={() => toggleItem(item.id)}
-                                                        className="mt-1"
+                                                        className="mt-1 shrink-0"
                                                     />
-                                                    <div className="flex-1">
-                                                        <div className="flex items-start justify-between">
-                                                            <div>
-                                                                <div className="text-base font-medium">{item.title}</div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="text-base font-semibold">{item.title}</div>
                                                                 {item.description && (
-                                                                    <p className="text-sm text-muted-foreground">
+                                                                    <p className="mt-1 text-sm text-muted-foreground">
                                                                         {item.description}
                                                                     </p>
                                                                 )}
                                                             </div>
-                                                            <div className="text-right">
+                                                            <div className="shrink-0 text-left sm:text-right">
                                                                 <div className="text-lg font-bold">
                                                                     €{(parseFloat(item.additional_cost || '0') * parseFloat(project.facade_area || '0')).toFixed(2)}
                                                                 </div>
@@ -590,7 +600,7 @@ export default function ConfigurationWizard({ project, configuration, categories
                                 {/* Ventilation items */}
                                 {currentCategory.name.toLowerCase().includes('ventilation') && (
                                     <div className="space-y-4">
-                                        <h3 className="font-medium">{t('ventilation_system', translations)}</h3>
+                                        <h3 className="text-lg font-semibold">{t('ventilation_system', translations)}</h3>
                                         <p className="text-sm text-muted-foreground">
                                             {t('number_of_rooms', translations)}: {project.rooms.length}
                                         </p>
@@ -599,24 +609,24 @@ export default function ConfigurationWizard({ project, configuration, categories
                                             .map((item) => (
                                                 <div
                                                     key={item.id}
-                                                    className="flex items-start gap-4 rounded-lg border p-4"
+                                                    className="flex items-start gap-4 rounded-lg border p-4 transition-colors hover:bg-accent/50"
                                                 >
                                                     <Checkbox
                                                         checked={isItemSelected(item.id)}
                                                         onCheckedChange={() => toggleItem(item.id)}
-                                                        className="mt-1"
+                                                        className="mt-1 shrink-0"
                                                     />
-                                                    <div className="flex-1">
-                                                        <div className="flex items-start justify-between">
-                                                            <div>
-                                                                <div className="text-base font-medium">{item.title}</div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="text-base font-semibold">{item.title}</div>
                                                                 {item.description && (
-                                                                    <p className="text-sm text-muted-foreground">
+                                                                    <p className="mt-1 text-sm text-muted-foreground">
                                                                         {item.description}
                                                                     </p>
                                                                 )}
                                                             </div>
-                                                            <div className="text-right">
+                                                            <div className="shrink-0 text-left sm:text-right">
                                                                 <div className="text-lg font-bold">
                                                                     €{(parseFloat(item.additional_cost || '0') * project.rooms.length).toFixed(2)}
                                                                 </div>
@@ -643,32 +653,34 @@ export default function ConfigurationWizard({ project, configuration, categories
                                             return (
                                                 <div
                                                     key={item.id}
-                                                    className={`flex items-start gap-4 rounded-lg border p-4 ${
-                                                        isProhibitedItem ? 'opacity-50' : ''
+                                                    className={`flex items-start gap-4 rounded-lg border p-4 transition-colors ${
+                                                        isProhibitedItem 
+                                                            ? 'opacity-50 cursor-not-allowed bg-muted/50' 
+                                                            : 'hover:bg-accent/50'
                                                     }`}
                                                 >
                                                     <Checkbox
                                                         checked={isItemSelected(item.id)}
                                                         onCheckedChange={() => toggleItem(item.id)}
                                                         disabled={isProhibitedItem}
-                                                        className="mt-1"
+                                                        className="mt-1 shrink-0"
                                                     />
-                                                    <div className="flex-1">
-                                                        <div className="flex items-start justify-between">
-                                                            <div>
-                                                                <div className="text-base font-medium">{item.title}</div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="text-base font-semibold">{item.title}</div>
                                                                 {item.description && (
-                                                                    <p className="text-sm text-muted-foreground">
+                                                                    <p className="mt-1 text-sm text-muted-foreground">
                                                                         {item.description}
                                                                     </p>
                                                                 )}
                                                                 {item.consultation_required && (
-                                                                    <p className="mt-1 text-sm font-medium text-orange-600">
+                                                                    <p className="mt-1 text-sm font-medium text-orange-600 dark:text-orange-400">
                                                                         {t('consultation_required', translations)}
                                                                     </p>
                                                                 )}
                                                             </div>
-                                                            <div className="text-right">
+                                                            <div className="shrink-0 text-left sm:text-right">
                                                                 <div className="text-lg font-bold">
                                                                     €{parseFloat(item.additional_cost || '0').toFixed(2)}
                                                                 </div>
@@ -676,10 +688,10 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                         </div>
 
                                                         {isItemSelected(item.id) && (
-                                                            <div className="mt-4 space-y-3">
+                                                            <div className="mt-4 space-y-3 rounded-md border-t pt-4">
                                                                 {item.variations.length > 0 && (
-                                                                    <div>
-                                                                        <Label>{t('variation', translations)}</Label>
+                                                                    <div className="space-y-2">
+                                                                        <Label className="text-sm font-medium">{t('variation', translations)}</Label>
                                                                         <Select
                                                                             value={
                                                                                 selectedItems.find((si) => si.item_id === item.id)
@@ -712,8 +724,8 @@ export default function ConfigurationWizard({ project, configuration, categories
                                                                 )}
 
                                                                 {item.requires_quantity && (
-                                                                    <div>
-                                                                        <Label>{t('quantity', translations)}</Label>
+                                                                    <div className="space-y-2">
+                                                                        <Label className="text-sm font-medium">{t('quantity', translations)}</Label>
                                                                         <Input
                                                                             type="number"
                                                                             min="1"
@@ -742,16 +754,32 @@ export default function ConfigurationWizard({ project, configuration, categories
                 )}
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between">
-                    <Button onClick={prevCategory} disabled={currentCategoryIndex === 0} variant="outline">
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+                    <Button 
+                        onClick={prevCategory} 
+                        disabled={currentCategoryIndex === 0} 
+                        variant="outline"
+                        className="w-full sm:w-auto"
+                    >
+                        <ChevronRight className="mr-2 h-4 w-4 rotate-180" />
                         {t('previous', translations)}
                     </Button>
                     <div className="flex gap-2">
-                        <Button onClick={handleSave} variant="outline" disabled={processing}>
+                        <Button 
+                            onClick={handleSave} 
+                            variant="outline" 
+                            disabled={processing}
+                            className="flex-1 sm:flex-initial"
+                        >
                             <Save className="mr-2 h-4 w-4" />
-                            {t('save_and_exit', translations)}
+                            <span className="hidden sm:inline">{t('save_and_exit', translations)}</span>
+                            <span className="sm:hidden">{t('save', translations)}</span>
                         </Button>
-                        <Button onClick={nextCategory} disabled={currentCategoryIndex === categories.length - 1}>
+                        <Button 
+                            onClick={nextCategory} 
+                            disabled={currentCategoryIndex === categories.length - 1}
+                            className="flex-1 sm:flex-initial"
+                        >
                             {t('next', translations)}
                             <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
