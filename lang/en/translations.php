@@ -418,6 +418,8 @@ return [
     'customer_can_enter_quantity' => 'Customer can enter quantity',
     'standard_option_no_extra_cost' => 'Standard Option (no extra cost)',
     'images_selected' => 'image(s) selected',
+    'existing_images' => 'Existing Images',
+    'new_images_selected' => 'new images selected',
     'add_variation' => 'Add Variation',
     'variations' => 'Variations',
     'size' => 'Size',

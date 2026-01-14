@@ -263,8 +263,14 @@ export default function ItemsEdit() {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setData('images', Array.from(e.target.files));
+            const newFiles = Array.from(e.target.files);
+            setData('images', [...data.images, ...newFiles]);
         }
+    };
+
+    const removeNewImage = (index: number) => {
+        const updatedImages = data.images.filter((_, i) => i !== index);
+        setData('images', updatedImages);
     };
 
     return (
@@ -454,32 +460,37 @@ export default function ItemsEdit() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {item.images && item.images.length > 0 && (
-                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                                {item.images.map((image, index) => (
-                                    <div
-                                        key={image.id}
-                                        className="relative aspect-square overflow-hidden rounded-lg border cursor-pointer group"
-                                        onClick={() => setSelectedImageIndex(index)}
-                                    >
-                                        <img
-                                            src={image.url}
-                                            alt="Item"
-                                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="sm"
-                                            className="absolute right-2 top-2 z-10"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteImage(image.id);
-                                            }}
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium">
+                                    {t('existing_images', translations) || 'Existing Images'}
+                                </p>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                                    {item.images.map((image, index) => (
+                                        <div
+                                            key={image.id}
+                                            className="relative aspect-square overflow-hidden rounded-lg border cursor-pointer group"
+                                            onClick={() => setSelectedImageIndex(index)}
                                         >
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
+                                            <img
+                                                src={image.url}
+                                                alt="Item"
+                                                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                className="absolute right-2 top-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteImage(image.id);
+                                                }}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
                         <div className="space-y-2">
@@ -489,17 +500,42 @@ export default function ItemsEdit() {
                                 accept="image/*"
                                 onChange={handleImageChange}
                             />
-                            {data.images.length > 0 && (
-                                <p className="text-sm text-muted-foreground">
-                                    {data.images.length} new {t('images_selected', translations)}
-                                </p>
-                            )}
                             {errors.images && (
                                 <p className="text-sm text-destructive">
                                     {errors.images}
                                 </p>
                             )}
                         </div>
+                        {data.images.length > 0 && (
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium">
+                                    {data.images.length} {t('new_images_selected', translations) || 'new images selected'}
+                                </p>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                                    {data.images.map((image, index) => (
+                                        <div
+                                            key={index}
+                                            className="relative aspect-square overflow-hidden rounded-lg border group"
+                                        >
+                                            <img
+                                                src={URL.createObjectURL(image)}
+                                                alt={`New preview ${index + 1}`}
+                                                className="h-full w-full object-cover"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                className="absolute right-2 top-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onClick={() => removeNewImage(index)}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 

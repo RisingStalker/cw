@@ -406,6 +406,8 @@ return [
     'customer_can_enter_quantity' => 'Kunde kann Menge eingeben',
     'standard_option_no_extra_cost' => 'Standardoption (keine zusätzlichen Kosten)',
     'images_selected' => 'Bild(er) ausgewählt',
+    'existing_images' => 'Vorhandene Bilder',
+    'new_images_selected' => 'neue Bilder ausgewählt',
     'add_variation' => 'Variante hinzufügen',
     'variations' => 'Variationen',
     'size' => 'Größe',

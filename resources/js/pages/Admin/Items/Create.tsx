@@ -108,8 +108,14 @@ export default function ItemsCreate() {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setData('images', Array.from(e.target.files));
+            const newFiles = Array.from(e.target.files);
+            setData('images', [...data.images, ...newFiles]);
         }
+    };
+
+    const removeImage = (index: number) => {
+        const updatedImages = data.images.filter((_, i) => i !== index);
+        setData('images', updatedImages);
     };
 
     // Get selected category name
@@ -383,7 +389,7 @@ export default function ItemsCreate() {
                     <CardHeader>
                         <CardTitle>{t('images', translations)}</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Input
                                 type="file"
@@ -391,17 +397,42 @@ export default function ItemsCreate() {
                                 accept="image/*"
                                 onChange={handleImageChange}
                             />
-                            {data.images.length > 0 && (
-                                <p className="text-sm text-muted-foreground">
-                                    {data.images.length} {t('images_selected', translations)}
-                                </p>
-                            )}
                             {errors.images && (
                                 <p className="text-sm text-destructive">
                                     {errors.images}
                                 </p>
                             )}
                         </div>
+                        {data.images.length > 0 && (
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium">
+                                    {data.images.length} {t('images_selected', translations)}
+                                </p>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                                    {data.images.map((image, index) => (
+                                        <div
+                                            key={index}
+                                            className="relative aspect-square overflow-hidden rounded-lg border group"
+                                        >
+                                            <img
+                                                src={URL.createObjectURL(image)}
+                                                alt={`Preview ${index + 1}`}
+                                                className="h-full w-full object-cover"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                className="absolute right-2 top-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onClick={() => removeImage(index)}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
